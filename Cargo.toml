@@ -3,18 +3,13 @@ name = "clurd"
 version = "0.1.0"
 license = "ISC"
 edition = "2018"
-exclude = ["index.node"]
 
-[lib]
-crate-type = ["cdylib"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-sha2 = "0.10.2"
 sha256 = "1.0.3"
+rocket = { version = "0.5.0-rc.2", features = ["json"] }
+json = "0.12.4"
 
-[dependencies.neon]
-version = "0.10"
-default-features = false
-features = ["napi-6"]
+

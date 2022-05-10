@@ -4,14 +4,19 @@
 	export let gap;
 	export let align;
 	let ls:Array<object>=[];
-	onMount(()=>{
+		function test(e:String) {
+			console.log(e)
+			getfile(e)
+		}
+	function getfile(folder:String) {
+		ls = [];
 		fetch('http://localhost:3001/getfile', {
 			method: 'POST', // or 'PUT'
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				folder:'./'
+				folder:folder
 			}),
 			})
 			.then(response => response.json())
@@ -22,6 +27,9 @@
 			.catch((error) => {
 			console.error('Error:', error);
 			});
+	}
+	onMount(()=>{
+		getfile("./")
 	})
 </script>
 
@@ -36,15 +44,17 @@
 <section>
 <div class="grid-container">
 {#each ls as lsraw}
-	{#if lsraw.file.split('.')[1] == null}
-	<div class="grid-item">
-		<img src="folder.png" class="icon"/>
+	{#if lsraw.md5 == "dir"}
+	<div class="grid-item" on:click={() => test(lsraw.file)}>
+		<img src="folder.png" class="icon" alt="folder"/>
 		<p>{lsraw.file}</p>
 	</div>
 	{:else}
 	<div class="grid-item">
-		<img src="file.png" class="icon"/>
-		<p>{lsraw.file}</p>
+		<a href={"localhost:3001/" + lsraw.filename}>
+			<img src="file.png" class="icon" alt="file"/>
+			<p>{lsraw.file}</p>
+		</a>
 	</div>
 	{/if}
 {/each}
