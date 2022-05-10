@@ -1,16 +1,11 @@
+const { md5 } = require("./index.node");
 const express = require('express')
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
 const app = express();
 const port = 3001;
-const path = require('path');
-const { exec } = require("child_process");
-const { spawn } = require("child_process");
 const fileUpload = require('express-fileupload');
-const { stdout } = require('process');
-const execSync = require('child_process').execSync;
-
 app.use(fileUpload());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -23,7 +18,7 @@ app.post("/getfile", function(req,res){
   let files = [];
   fs.readdir(req.body.folder, (err, filesraw) => {
       filesraw.forEach(file => {
-        code = execSync('./md5 ' + file, {encoding: 'utf8'});
+        code = md5(file);
         files.push({
           file:file,
           md5:code
@@ -35,4 +30,5 @@ app.post("/getfile", function(req,res){
 });
 app.use(express.urlencoded({ extended: true }));
 
-app.listen(port, () => console.log(`CLOUD API started on port ${port}!`));
+app.listen(port, () => console.log(`CLURD API started on port ${port}!`));
+
