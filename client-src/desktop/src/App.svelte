@@ -1,6 +1,7 @@
 <script>
 	export const prerender = true;
 	import { onMount } from 'svelte';
+	
 	export let gap;
 	export let align;
 	let ls=[];

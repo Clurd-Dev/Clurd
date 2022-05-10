@@ -5,6 +5,7 @@ const cors = require('cors');
 const fs = require('fs');
 const app = express();
 const port = 3001;
+const path = require( "path" );
 const fileUpload = require('express-fileupload');
 app.use(fileUpload());
 app.use(cors());
@@ -15,18 +16,22 @@ app.get("/", function(req,res){
 });
 app.post("/getfile", function(req,res){
 
-  let files = [];
-  fs.readdir(req.body.folder, (err, filesraw) => {
-      filesraw.forEach(file => {
-        code = md5(file);
-        files.push({
-          file:file,
+  let filest = [];
+  fs.readdirSync( req.body.folder ).forEach( files => {
+        console.log("File: " + files)
+        let absolutePath = path.resolve( req.body.folder, files );
+        try {
+            code = md5(absolutePath);
+        } catch (error) {
+            console.log("Not a file");
+            code = "dir";
+        }
+        filest.push({
+          file:absolutePath,
           md5:code
         })
-    });
-    res.send(files)
-});
-
+ });
+ res.send(filest)
 });
 app.use(express.urlencoded({ extended: true }));
 
