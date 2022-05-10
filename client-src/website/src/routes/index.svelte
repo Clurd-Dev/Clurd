@@ -1,8 +1,12 @@
 <script lang="ts">
+	import { dialogs } from "svelte-dialogs";
+	import Reader from '../lib/editor.svelte';
+	const ENDPOINT:String = 'http://localhost:8000/getfiles';
 	export const prerender = true;
 	import { onMount } from 'svelte';
 	export let gap;
 	export let align;
+	
 	let ls:Array<object>=[];
 		function test(e:String) {
 			console.log(e)
@@ -10,25 +14,18 @@
 		}
 	function getfile(folder:String) {
 		ls = [];
-		fetch('http://localhost:3001/getfile', {
-			method: 'POST', // or 'PUT'
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				folder:folder
-			}),
-			})
-			.then(response => response.json())
-			.then(data => {
-			ls = data;
-			console.log(data)
-			})
-			.catch((error) => {
-			console.error('Error:', error);
-			});
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", ENDPOINT , true);
+		xhr.onreadystatechange = function() { 
+			if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+				console.log(JSON.parse(this.response))
+				ls = JSON.parse(this.response);
+			}
+		}
+		xhr.send(JSON.stringify({folder:folder}));
 	}
 	onMount(()=>{
+
 		getfile("./")
 	})
 </script>
@@ -38,10 +35,11 @@
 	<title>Home</title>
 	<meta name="description" content="Svelte demo app" />
 	<script src="//naver.github.io/egjs-grid/release/latest/dist/grid.min.js"></script>
+
 </svelte:head>
 
-
 <section>
+
 <div class="grid-container">
 {#each ls as lsraw}
 	{#if lsraw.md5 == "dir"}
@@ -50,11 +48,9 @@
 		<p>{lsraw.file}</p>
 	</div>
 	{:else}
-	<div class="grid-item">
-		<a href={"localhost:3001/" + lsraw.filename}>
+	<div class="grid-item" on:click={() => dialogs.modal(Reader, { filename: lsraw.file })}>
 			<img src="file.png" class="icon" alt="file"/>
 			<p>{lsraw.file}</p>
-		</a>
 	</div>
 	{/if}
 {/each}
@@ -76,4 +72,5 @@
 	.icon{
 		width:128px;
 	}
+
 	</style>
