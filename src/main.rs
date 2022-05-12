@@ -46,10 +46,23 @@ struct Task<'r> {
     folder: &'r str
 }
 
+#[post("/", data = "<file>")]
+fn remove(file: Json<Task<'_>>) -> &str{
+    let removed = fs::remove_file(file.folder);
+    let is_removed = match removed {
+        Ok(removed) => "1",
+        Err(error) => "0",
+    };
+    is_removed
+}
 
+#[post("/", data = "<file>")]
+fn zip(file: Json<Task<'_>>) -> (){
+    
+}
 #[post("/", data = "<task>")]
 fn files(task: Json<Task<'_>>) -> String { 
-    
+    println!("{}", task.folder);
     let mut files_raw = json::JsonValue::new_array();
 
     let paths = fs::read_dir(&Path::new(task.folder)).unwrap();
@@ -68,8 +81,11 @@ fn files(task: Json<Task<'_>>) -> String {
         file_name_as_string
       }).collect::<Vec<String>>();
         for path in names {
+            println!("{}", path);
+            let tpath = format!("{}/{}", task.folder, path);
+            //println!("{}", tpath);
             let filename = path.clone();
-            let bytes_raw = std::fs::read(path);
+            let bytes_raw = std::fs::read(tpath);
             let bytes = match bytes_raw {
                 Ok(bytes_raw) => bytes_raw,
                 Err(error) => Vec::new(),
@@ -92,7 +108,10 @@ fn index() ->  &'static str {
 }
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/getfiles", routes![files]).mount("/", routes![index]).attach(Cors).mount("/", FileServer::from("./"))
+    rocket::build().mount("/getfiles", routes![files])
+    .mount("/", routes![index]).attach(Cors)
+    .mount("/", FileServer::from("./"))
+    .mount("/remove", routes![remove])
 }
 
 
