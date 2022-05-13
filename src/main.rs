@@ -7,12 +7,12 @@ use rocket::fs::FileServer;
 use std::fs;
 use std::path::Path;
 use std::string::ToString;
-use rocket::serde::{Deserialize, json::Json};
+use rocket::serde::{Deserialize, json::Json, Serialize};
 use json::object;
 use rocket::http::Header;
 use rocket::{Request, Response, Ignite};
 use rocket::fairing::{Fairing, Info, Kind};
-
+use fs2;
 pub struct Cors;
 
 #[rocket::async_trait]
@@ -46,6 +46,15 @@ struct Task<'r> {
     folder: &'r str
 }
 
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+
+struct Space_folder { 
+    total: String,
+    available: String
+ }
+
+
 #[post("/", data = "<file>")]
 fn remove(file: Json<Task<'_>>) -> &str{
     let removed = fs::remove_file(file.folder);
@@ -59,6 +68,24 @@ fn remove(file: Json<Task<'_>>) -> &str{
 #[post("/", data = "<file>")]
 fn zip(file: Json<Task<'_>>) -> (){
     
+}
+#[post("/", data = "<task>")]
+fn space(task: Json<Task<'_>>) -> Json<Space_folder> { 
+    let pen_space = fs2::free_space(task.folder);
+    let u64_space = match pen_space {
+        Ok(pen_space) => pen_space,
+        Err(error) => u64::MIN,
+    };
+    let pen_total = fs2::total_space(task.folder);
+    let u64_total = match pen_total {
+        Ok(pen_total) => pen_total,
+        Err(error) => u64::MIN,
+    };
+
+    Json(Space_folder { 
+        available: format!("{}", u64_space),
+        total: format!("{}", u64_total)
+     })
 }
 #[post("/", data = "<task>")]
 fn files(task: Json<Task<'_>>) -> String { 
@@ -112,6 +139,7 @@ fn rocket() -> _ {
     .mount("/", routes![index]).attach(Cors)
     .mount("/", FileServer::from("./"))
     .mount("/remove", routes![remove])
+    .mount("/space", routes![space])
 }
 
 
