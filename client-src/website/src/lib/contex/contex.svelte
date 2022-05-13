@@ -1,0 +1,25 @@
+<script lang="ts">
+    export let current_file:string, path:string, remove:any, getfile:any, rename:any;
+    import { copy } from '../ts/copy';
+    import "./contex.css";
+</script>
+<div id="contextMenu" class="context-menu" style="display: none" >
+	<ul class="menu">
+		<li class="rename"><a href="#0" on:click={rename}><i class="fa fa-pencil" aria-hidden="true" /> Rename</a></li>
+		<li class="link">
+			<a href="#0" on:click={copy(current_file)}><i class="fa fa-link" aria-hidden="true" /> Copy Link Address</a>
+		</li>
+		<!-- <li class="copy">
+			<a href="#0" >
+				<i class="fa fa-copy" aria-hidden="true" /> Copy to
+			</a> 
+			</li>
+		<li class="paste"><a href="#"><i class="fa fa-paste" aria-hidden="true" /> Move to</a></li> -->
+		<li class="download">
+			<a href={current_file}><i class="fa fa-download" aria-hidden="true" /> Download</a>
+		</li>
+		<li class="trash" on:click={remove(path  + current_file.replace("http://localhost:8000/", ""), getfile, path)}>
+            <a href="#"><i class="fa fa-trash" aria-hidden="true" /> Delete</a>
+        </li>
+	</ul>
+</div>

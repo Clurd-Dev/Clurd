@@ -1,9 +1,11 @@
 <script lang="ts">
 	import Header from '$lib/header/Header.svelte';
 	import { onMount } from 'svelte';
+
 	import '../app.css';
-	let available: String = "0", total: String = "0";
-	const ENDPOINT: String = 'http://localhost:8000/space';
+	let available: string = "0",
+		total: string = "0";
+	const ENDPOINT: string = 'http://localhost:8000/space';
 	function myFunction() {
 		var x = document.getElementById('myTopnav');
 		if (x.className === 'topnav') {
@@ -12,20 +14,19 @@
 			x.className = 'topnav';
 		}
 	}
-	onMount(()=>{
+	onMount(() => {
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', ENDPOINT, true);
 		xhr.onreadystatechange = function () {
 			if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
 				//console.log(JSON.parse(this.response));
 				let temp = JSON.parse(this.response);
-				available = temp.available;
-				total = temp.total;
+				available = (parseFloat((parseInt(temp.total) / 1000000000).toFixed(3)) - parseFloat((parseInt(temp.available) / 1000000000).toFixed(3))).toFixed(3);
+				total = (parseInt(temp.total) / 1000000000).toFixed(3);
 			}
 		};
-		xhr.send(JSON.stringify({ folder: "./" }));
-	})
-
+		xhr.send(JSON.stringify({ folder: './' }));
+	});
 </script>
 
 <svelte:head>
@@ -50,9 +51,10 @@
 </main>
 <footer>
 	<div align="center">
-	<p>Spazio utilizzato {(parseInt(total)/1000000000).toFixed(3) - (parseInt(available)/1000000000).toFixed(3)} GB of {(parseInt(total)/1000000000).toFixed(3)} GB</p>
-</div>
-	<progress class="uk-progress" value={total - available} max={total}></progress>
+		<p>Spazio utilizzato {available} GB of {total} GB</p>
+	</div>
+	<progress class="uk-progress" value={available} max={total} />
 </footer>
+
 <style>
 </style>

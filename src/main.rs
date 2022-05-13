@@ -10,7 +10,7 @@ use std::string::ToString;
 use rocket::serde::{Deserialize, json::Json, Serialize};
 use json::object;
 use rocket::http::Header;
-use rocket::{Request, Response, Ignite};
+use rocket::{Request, Response};
 use rocket::fairing::{Fairing, Info, Kind};
 use fs2;
 pub struct Cors;
@@ -46,10 +46,18 @@ struct Task<'r> {
     folder: &'r str
 }
 
+#[derive(Deserialize)]
+#[serde(crate = "rocket::serde")]
+
+struct RenameFile<'r> {
+    folder: &'r str,
+    new: &'r str
+}
+
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
 
-struct Space_folder { 
+struct SpaceFolder { 
     total: String,
     available: String
  }
@@ -59,30 +67,37 @@ struct Space_folder {
 fn remove(file: Json<Task<'_>>) -> &str{
     let removed = fs::remove_file(file.folder);
     let is_removed = match removed {
-        Ok(removed) => "1",
-        Err(error) => "0",
+        Ok(_removed) => "1",
+        Err(_error) => "0",
     };
     is_removed
 }
 
-#[post("/", data = "<file>")]
-fn zip(file: Json<Task<'_>>) -> (){
-    
+#[post("/", data = "<rename_file>")]
+fn rename(rename_file: Json<RenameFile<'_>>) -> &str{
+    println!("{}", rename_file.folder);
+    let renamed = fs::rename(rename_file.folder, rename_file.new);
+    let is_renamed = match renamed {
+        Ok(_renamed) => "1",
+        Err(_error) => "0",
+    };
+    is_renamed
 }
+
 #[post("/", data = "<task>")]
-fn space(task: Json<Task<'_>>) -> Json<Space_folder> { 
+fn space(task: Json<Task<'_>>) -> Json<SpaceFolder> { 
     let pen_space = fs2::free_space(task.folder);
     let u64_space = match pen_space {
         Ok(pen_space) => pen_space,
-        Err(error) => u64::MIN,
+        Err(_error) => u64::MIN,
     };
     let pen_total = fs2::total_space(task.folder);
     let u64_total = match pen_total {
         Ok(pen_total) => pen_total,
-        Err(error) => u64::MIN,
+        Err(_error) => u64::MIN,
     };
 
-    Json(Space_folder { 
+    Json(SpaceFolder { 
         available: format!("{}", u64_space),
         total: format!("{}", u64_total)
      })
@@ -108,14 +123,12 @@ fn files(task: Json<Task<'_>>) -> String {
         file_name_as_string
       }).collect::<Vec<String>>();
         for path in names {
-            println!("{}", path);
             let tpath = format!("{}/{}", task.folder, path);
-            //println!("{}", tpath);
             let filename = path.clone();
             let bytes_raw = std::fs::read(tpath);
             let bytes = match bytes_raw {
                 Ok(bytes_raw) => bytes_raw,
-                Err(error) => Vec::new(),
+                Err(_error) => Vec::new(),
             };
             let mut hash = sha256::digest_bytes(&bytes);
             if hash == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"{
@@ -140,6 +153,7 @@ fn rocket() -> _ {
     .mount("/", FileServer::from("./"))
     .mount("/remove", routes![remove])
     .mount("/space", routes![space])
+    .mount("/rename", routes![rename])
 }
 
 

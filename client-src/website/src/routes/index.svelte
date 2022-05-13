@@ -1,56 +1,93 @@
 <script lang="ts">
 	import { dialogs } from 'svelte-dialogs';
 	import Reader from '../lib/editor.svelte';
-	const ENDPOINT: String = 'http://localhost:8000/getfiles';
-	export const prerender = true;
+	import { remove } from '../lib/ts/io';
 	import { onMount } from 'svelte';
-	let path = './';
+	import { rightClick, hideMenu } from '../lib/ts/menu';
+	import Toolbox from '$lib/toolbox.svelte';
+	import Contex from '$lib/contex/contex.svelte';
+	const ENDPOINT = 'http://localhost:8000/getfiles';
+	const ENDPOINT_RENAME = 'http://localhost:8000/rename';
+	let current_name = "";
 	let ls: Array<object> = [];
-	async function test(e: String) {
-		path = path + e;
-		//console.log(e);
-		await getfile(e);
-	}
-	async function getfile() {
-		ls = [];
-		//console.log(path);
-		
-		//console.log(path);
-		var xhr = new XMLHttpRequest();
+	let current_file = "";
+	let path = './';
+	function getfile(path: string) {
+		const xhr = new XMLHttpRequest();
 		xhr.open('POST', ENDPOINT, true);
 		xhr.onreadystatechange = function () {
 			if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-				//console.log(JSON.parse(this.response));
 				ls = JSON.parse(this.response);
 			}
 		};
 		xhr.send(JSON.stringify({ folder: path }));
 	}
+	
+	async function test(e: string) {
+		path = path + e;
+		current_name = e;
+		getfile(path);
+	}
 	function goback() {
-		if(path == "./"){
+		if (path == './') {
 			dialogs.alert("Can't go back through home");
 		}
-		let tempath = path.split("/");
+		let tempath = path.split('/');
 		tempath.pop();
 		path = tempath.join('/');
-		getfile();
+		getfile(path);
 	}
-	onMount(() => {
-		getfile();
+	async function rename(e) {
+		let old = current_file.replace("http://localhost:8000/", "./")
+		console.log(old);
+		let new_name:any = await dialogs.prompt("Insert the new name for this file");
+		if(new_name == undefined)
+			dialogs.alert("Please enter a correct name with extension");
+		else{
+			const xhr = new XMLHttpRequest();
+		xhr.open('POST', ENDPOINT_RENAME, true);
+		xhr.onreadystatechange = function () {
+			if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+				getfile(path);
+			}
+		};
+		xhr.send(JSON.stringify({ folder: old , new: new_name[0] }));
+		}
+	}
+	onMount(async () => {
+		document.onclick = hideMenu;
+		getfile(path);
 	});
+	function contex(e){
+		current_file = "http://localhost:8000" + (path.replace(".", "") + rightClick(e));
+		console.log(current_file);
+	}
 </script>
 
 <svelte:head>
 	<title>Home</title>
 	<meta name="description" content="Svelte demo app" />
 	<script src="//naver.github.io/egjs-grid/release/latest/dist/grid.min.js"></script>
+	<link rel="preconnect" href="https://fonts.gstatic.com" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap"
+		rel="stylesheet"
+	/>
+	<link
+		rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+	/>
+	<link rel="stylesheet" href="/css/index.css" />
 </svelte:head>
-<img src="/images/back.png" alt="back" on:click={goback}/>
+
+<Toolbox getfile={getfile} goback={goback} path={path}/>
+
+<Contex current_file={current_file} path={path} remove={remove} getfile={getfile} rename={rename}/>
 <section>
-	<div class="grid-container">
+	<div class="grid-container" on:contextmenu={rightClick}>
 		{#each ls as lsraw}
 			{#if lsraw.md5 == 'dir'}
-				<div class="grid-item" on:click={() => test(lsraw.file + "/")}>
+				<div class="grid-item" on:click={() => test(lsraw.file + '/')}>
 					<img src="/images/folder.png" class="icon" alt="folder" />
 					<p>{lsraw.file}</p>
 				</div>
@@ -58,12 +95,14 @@
 				<div
 					class="grid-item"
 					on:click={() => dialogs.modal(Reader, { filename: path + lsraw.file })}
+					on:contextmenu={contex}
+					id={lsraw.file}
 				>
-				{#if lsraw.file.split(".")[1] != "js"}
-					<img src="/images/file.png" class="icon" alt="file" />
+					{#if lsraw.file.split('.')[1] != 'js'}
+						<img src="/images/file.png" class="icon" alt="file" />
 					{:else}
-					<img src="/images/js.png" alt="filejs" class="icon" />
-				{/if}
+						<img src="/images/js.png" alt="filejs" class="icon" />
+					{/if}
 					<p>{lsraw.file}</p>
 				</div>
 			{/if}
@@ -72,18 +111,5 @@
 </section>
 
 <style>
-	.grid-container {
-		display: grid;
-		grid-template-columns: auto auto auto;
-		padding: 10px;
-	}
-	.grid-item {
-		border: 1px solid rgba(0, 0, 0, 0.8);
-		padding: 20px;
-		font-size: 30px;
-		text-align: center;
-	}
-	.icon {
-		width: 128px;
-	}
+
 </style>
