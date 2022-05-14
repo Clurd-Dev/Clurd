@@ -102,7 +102,25 @@ fn copy(rename_file: Json<RenameFile<'_>>) -> &str{
     };
     is_copied
 }
-
+#[post("/", data = "<rename_file>")]
+fn movefs(rename_file: Json<RenameFile<'_>>) -> &str{
+    let new_path = format!("{}{}", rename_file.new, rename_file.folder);
+    let copied = fs::copy(rename_file.folder, new_path);
+    let is_copied = match copied {
+        Ok(_renamed) => "1",
+        Err(_error) => "0",
+    };
+    let removed = fs::remove_file(rename_file.folder);
+    let is_removed = match removed {
+        Ok(_removed) => "1",
+        Err(_error) => "0",
+    };
+    if is_copied == "1" && is_removed == "1"{
+        "1"
+    }else{
+        "0"
+    }
+}
 #[post("/", data = "<task>")]
 fn space(task: Json<Task<'_>>) -> Json<SpaceFolder> { 
     let pen_space = fs2::free_space(task.folder);
@@ -174,6 +192,7 @@ fn rocket() -> _ {
     .mount("/space", routes![space])
     .mount("/rename", routes![rename])
     .mount("/copy", routes![copy])
+    .mount("/move", routes![movefs])
 }
 
 

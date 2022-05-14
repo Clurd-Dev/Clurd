@@ -2,7 +2,7 @@
 	import { copy } from '$lib/ts/copy';
 
 	import { DialogContent } from 'svelte-dialogs';
-	import { copyfs } from '../ts/io';
+	import { copyfs, movefs } from '../ts/io';
 	const ENDPOINT = 'http://localhost:8000/getfiles';
 	export let ls: Array<object>, path: string, current_name: string, current_file: string;
 	function getfile(path: string) {
@@ -24,16 +24,19 @@
 </script>
 
 <DialogContent>
-	<h1 slot="header">MY COMPONENT</h1>
+	<h1 slot="header">Select the path where you want to move file</h1>
 	<svelte:fragment slot="body">
 		{#each ls as folder}
 			{#if folder.md5 == 'dir' && folder.file.split('.')[1] == null}
 				<p on:click={() => test(folder.file + '/')}>{folder.file}</p>
 			{/if}
 		{/each}
-		<button on:click={copyfs(current_file.replace('http://localhost:8000/', ''), path)}
+		<p><button on:click={copyfs(current_file.replace('http://localhost:8000/', ''), path)}
 			>Copy the file here</button
-		>
+		></p>
+		<p><button on:click={movefs(current_file.replace('http://localhost:8000/', ''), path)}
+		>Move the file here</button
+	></p>
 	</svelte:fragment>
 </DialogContent>
 

@@ -40,3 +40,17 @@ export async function copyfs(old_file: string, new_file: string) {
 	};
 	xhr.send(JSON.stringify({ folder: old_file, new: new_file }));
 }
+
+export async function movefs(old_file: string, new_file: string) {
+	const ENDPOINT = 'http://localhost:8000/move';
+	const xhr = new XMLHttpRequest();
+	xhr.open('POST', ENDPOINT, true);
+	xhr.onreadystatechange = async function () {
+		if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+			if (this.responseText == '1')
+				dialogs.alert('File successfully moved').then(() => location.reload());
+			else dialogs.alert('File unsuccessfully moved, check the error in log of server or retry');
+		}
+	};
+	xhr.send(JSON.stringify({ folder: old_file, new: new_file }));
+}

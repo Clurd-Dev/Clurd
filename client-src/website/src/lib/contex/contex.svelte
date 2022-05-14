@@ -33,10 +33,9 @@
 						current_file: current_file
 					})}
 			>
-				<i class="fa fa-copy" aria-hidden="true" /> Copy to
+				<i class="fa fa-copy" aria-hidden="true" /> Copy/Move to
 			</a>
-		</li>
-		<!-- <li class="paste"><a href="#"><i class="fa fa-paste" aria-hidden="true" /> Move to</a></li>  -->
+		</li> 
 		<li class="download">
 			<a href={current_file}><i class="fa fa-download" aria-hidden="true" /> Download</a>
 		</li>
