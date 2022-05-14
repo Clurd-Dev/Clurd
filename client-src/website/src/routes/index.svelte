@@ -12,18 +12,7 @@
 	let ls: Array<object> = [];
 	let current_file = '';
 	let path = './';
-	function upload() {
-		let photo = document.getElementById('inputdata').files[0]; // file from input
-		var reader = new FileReader();
-		reader.onload = function () {
-			var arrayBuffer = this.result,
-				array = new Uint8Array(arrayBuffer),
-				binaryString = String.fromCharCode.apply(null, array);
-
-			console.log(binaryString);
-		};
-		reader.readAsArrayBuffer(photo);
-	}
+	let only_file: string;
 	function getfile(path: string) {
 		const xhr = new XMLHttpRequest();
 		xhr.open('POST', ENDPOINT, true);
@@ -38,6 +27,7 @@
 	async function test(e: string) {
 		path = path + e;
 		current_name = e;
+		console.log(path);
 		getfile(path);
 	}
 	function goback() {
@@ -70,6 +60,7 @@
 		getfile(path);
 	});
 	function contex(e) {
+		only_file = rightClick(e);
 		current_file = 'http://localhost:8000' + (path.replace('.', '') + rightClick(e));
 		console.log(current_file);
 	}
@@ -93,12 +84,12 @@
 
 <Toolbox {getfile} {goback} {path} />
 
-<Contex {current_file} {path} {remove} {getfile} {rename} {ls} {current_name} />
+<Contex {current_file} {path} {remove} {getfile} {rename} {ls} {current_name} {only_file} />
 <section>
-	<div class="grid-container" on:contextmenu={rightClick}>
+	<div class="grid-container" on:contextmenu={contex}>
 		{#each ls as lsraw}
 			{#if lsraw.md5 == 'dir'}
-				<div class="grid-item" on:click={() => test(lsraw.file + '/')}>
+				<div class="grid-item" on:click={() => test(lsraw.file + '/')} id={lsraw.file}>
 					<img src="/images/folder.png" class="icon" alt="folder" />
 					<p>{lsraw.file}</p>
 				</div>
@@ -121,6 +112,7 @@
 	</div>
 	<!-- <input type="file" name="dummyname" id="inputdata" />
 	<button on:click={upload}>Upload</button> -->
+	<hr />
 </section>
 
 <style>

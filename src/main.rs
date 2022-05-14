@@ -141,9 +141,8 @@ fn space(task: Json<Task<'_>>) -> Json<SpaceFolder> {
 }
 #[post("/", data = "<task>")]
 fn files(task: Json<Task<'_>>) -> String { 
-    println!("{}", task.folder);
     let mut files_raw = json::JsonValue::new_array();
-
+    println!("{}", task.folder);
     let paths = fs::read_dir(&Path::new(task.folder)).unwrap();
         
       let names =
@@ -160,23 +159,37 @@ fn files(task: Json<Task<'_>>) -> String {
         file_name_as_string
       }).collect::<Vec<String>>();
         for path in names {
+            let hash;
             let tpath = format!("{}/{}", task.folder, path);
-            let filename = path.clone();
-            let bytes_raw = std::fs::read(tpath);
-            let bytes = match bytes_raw {
-                Ok(bytes_raw) => bytes_raw,
-                Err(_error) => Vec::new(),
-            };
-            let mut hash = sha256::digest_bytes(&bytes);
-            if hash == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"{
-                hash = String::from("dir");
+            let filename = tpath.clone();
+            let file_json = path.clone();
+            let metadata = fs::metadata(filename).expect("Error during files listing.");
+            let permission = metadata.permissions().readonly();
+            let size = metadata.len();
+            let symbolic = metadata.is_symlink();
+            if symbolic == true{
+
+            }else{
+                let is_dir = metadata.is_dir();
+                if is_dir == false{
+                    let bytes_raw = std::fs::read(tpath);
+                    let bytes = match bytes_raw {
+                        Ok(bytes_raw) => bytes_raw,
+                        Err(_error) => Vec::new(),
+                    };
+                    hash = sha256::digest_bytes(&bytes);
+                }else{
+                    hash = String::from("dir");
+                }
+                files_raw.push(object!{
+                    file: file_json,
+                    md5: hash,
+                    read_only: permission,
+                    size: size
+                }).expect("Error during push of array, open an issue on github");
             }
-            files_raw.push(object!{
-                file: filename,
-                md5: hash,
-                absolute: "work in progress"
-            }).expect("Error during push of array, open an issue on github");
-        }
+            }
+           
         files_raw.to_string()
 }
 #[get("/")]

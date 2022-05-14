@@ -31,12 +31,16 @@
 				<p on:click={() => test(folder.file + '/')}>{folder.file}</p>
 			{/if}
 		{/each}
-		<p><button on:click={copyfs(current_file.replace('http://localhost:8000/', ''), path)}
-			>Copy the file here</button
-		></p>
-		<p><button on:click={movefs(current_file.replace('http://localhost:8000/', ''), path)}
-		>Move the file here</button
-	></p>
+		<p>
+			<button on:click={copyfs(current_file.replace('http://localhost:8000/', ''), path)}
+				>Copy the file here</button
+			>
+		</p>
+		<p>
+			<button on:click={movefs(current_file.replace('http://localhost:8000/', ''), path)}
+				>Move the file here</button
+			>
+		</p>
 	</svelte:fragment>
 </DialogContent>
 

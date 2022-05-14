@@ -5,10 +5,12 @@
 		getfile: any,
 		rename: any,
 		ls: Array<object>,
-		current_name: string;
+		current_name: string,
+		only_file: string;
 	import { dialogs } from 'svelte-dialogs';
 	import { copy } from '../ts/copy';
 	import FSBrowser from '../file-browser/browser.svelte';
+	import Details from '$lib/details/details.svelte';
 	import './contex.css';
 </script>
 
@@ -35,7 +37,7 @@
 			>
 				<i class="fa fa-copy" aria-hidden="true" /> Copy/Move to
 			</a>
-		</li> 
+		</li>
 		<li class="download">
 			<a href={current_file}><i class="fa fa-download" aria-hidden="true" /> Download</a>
 		</li>
@@ -44,6 +46,19 @@
 			on:click={remove(path + current_file.replace('http://localhost:8000/', ''), getfile, path)}
 		>
 			<a href="#"><i class="fa fa-trash" aria-hidden="true" /> Delete</a>
+		</li>
+		<li
+			class="trash"
+			on:click={() =>
+				dialogs.modal(Details, {
+					ls: ls,
+					name_file: current_file,
+					path: path,
+					current_name: current_name,
+					file_name: only_file
+				})}
+		>
+			<a href="#"><i class="fa fa-trash" aria-hidden="true" /> Details</a>
 		</li>
 	</ul>
 </div>
