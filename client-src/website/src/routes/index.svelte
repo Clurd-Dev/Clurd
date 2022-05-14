@@ -8,10 +8,22 @@
 	import Contex from '$lib/contex/contex.svelte';
 	const ENDPOINT = 'http://localhost:8000/getfiles';
 	const ENDPOINT_RENAME = 'http://localhost:8000/rename';
-	let current_name = "";
+	let current_name = '';
 	let ls: Array<object> = [];
-	let current_file = "";
+	let current_file = '';
 	let path = './';
+	function upload() {
+		let photo = document.getElementById('inputdata').files[0]; // file from input
+		var reader = new FileReader();
+		reader.onload = function () {
+			var arrayBuffer = this.result,
+				array = new Uint8Array(arrayBuffer),
+				binaryString = String.fromCharCode.apply(null, array);
+
+			console.log(binaryString);
+		};
+		reader.readAsArrayBuffer(photo);
+	}
 	function getfile(path: string) {
 		const xhr = new XMLHttpRequest();
 		xhr.open('POST', ENDPOINT, true);
@@ -22,7 +34,7 @@
 		};
 		xhr.send(JSON.stringify({ folder: path }));
 	}
-	
+
 	async function test(e: string) {
 		path = path + e;
 		current_name = e;
@@ -38,28 +50,27 @@
 		getfile(path);
 	}
 	async function rename(e) {
-		let old = current_file.replace("http://localhost:8000/", "./")
+		let old = current_file.replace('http://localhost:8000/', './');
 		console.log(old);
-		let new_name:any = await dialogs.prompt("Insert the new name for this file");
-		if(new_name == undefined)
-			dialogs.alert("Please enter a correct name with extension");
-		else{
+		let new_name: any = await dialogs.prompt('Insert the new name for this file');
+		if (new_name == undefined) dialogs.alert('Please enter a correct name with extension');
+		else {
 			const xhr = new XMLHttpRequest();
-		xhr.open('POST', ENDPOINT_RENAME, true);
-		xhr.onreadystatechange = function () {
-			if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-				getfile(path);
-			}
-		};
-		xhr.send(JSON.stringify({ folder: old , new: new_name[0] }));
+			xhr.open('POST', ENDPOINT_RENAME, true);
+			xhr.onreadystatechange = function () {
+				if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+					getfile(path);
+				}
+			};
+			xhr.send(JSON.stringify({ folder: old, new: new_name[0] }));
 		}
 	}
 	onMount(async () => {
 		document.onclick = hideMenu;
 		getfile(path);
 	});
-	function contex(e){
-		current_file = "http://localhost:8000" + (path.replace(".", "") + rightClick(e));
+	function contex(e) {
+		current_file = 'http://localhost:8000' + (path.replace('.', '') + rightClick(e));
 		console.log(current_file);
 	}
 </script>
@@ -80,9 +91,9 @@
 	<link rel="stylesheet" href="/css/index.css" />
 </svelte:head>
 
-<Toolbox getfile={getfile} goback={goback} path={path}/>
+<Toolbox {getfile} {goback} {path} />
 
-<Contex current_file={current_file} path={path} remove={remove} getfile={getfile} rename={rename}/>
+<Contex {current_file} {path} {remove} {getfile} {rename} {ls} {current_name} />
 <section>
 	<div class="grid-container" on:contextmenu={rightClick}>
 		{#each ls as lsraw}
@@ -108,8 +119,9 @@
 			{/if}
 		{/each}
 	</div>
+	<!-- <input type="file" name="dummyname" id="inputdata" />
+	<button on:click={upload}>Upload</button> -->
 </section>
 
 <style>
-
 </style>

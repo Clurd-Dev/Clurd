@@ -49,6 +49,13 @@ struct Task<'r> {
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 
+struct UploadFile<'r> {
+    folder: &'r str,
+    name_file: &'r str
+}
+#[derive(Deserialize)]
+#[serde(crate = "rocket::serde")]
+
 struct RenameFile<'r> {
     folder: &'r str,
     new: &'r str
@@ -59,10 +66,11 @@ struct RenameFile<'r> {
 
 struct SpaceFolder { 
     total: String,
-    available: String
+    available: String,
  }
 
 
+ 
 #[post("/", data = "<file>")]
 fn remove(file: Json<Task<'_>>) -> &str{
     let removed = fs::remove_file(file.folder);
@@ -82,6 +90,17 @@ fn rename(rename_file: Json<RenameFile<'_>>) -> &str{
         Err(_error) => "0",
     };
     is_renamed
+}
+
+#[post("/", data = "<rename_file>")]
+fn copy(rename_file: Json<RenameFile<'_>>) -> &str{
+    let new_path = format!("{}{}", rename_file.new, rename_file.folder);
+    let copied = fs::copy(rename_file.folder, new_path);
+    let is_copied = match copied {
+        Ok(_renamed) => "1",
+        Err(_error) => "0",
+    };
+    is_copied
 }
 
 #[post("/", data = "<task>")]
@@ -154,6 +173,7 @@ fn rocket() -> _ {
     .mount("/remove", routes![remove])
     .mount("/space", routes![space])
     .mount("/rename", routes![rename])
+    .mount("/copy", routes![copy])
 }
 
 

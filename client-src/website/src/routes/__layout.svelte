@@ -3,8 +3,8 @@
 	import { onMount } from 'svelte';
 
 	import '../app.css';
-	let available: string = "0",
-		total: string = "0";
+	let available: string = '0',
+		total: string = '0';
 	const ENDPOINT: string = 'http://localhost:8000/space';
 	function myFunction() {
 		var x = document.getElementById('myTopnav');
@@ -21,7 +21,10 @@
 			if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
 				//console.log(JSON.parse(this.response));
 				let temp = JSON.parse(this.response);
-				available = (parseFloat((parseInt(temp.total) / 1000000000).toFixed(3)) - parseFloat((parseInt(temp.available) / 1000000000).toFixed(3))).toFixed(3);
+				available = (
+					parseFloat((parseInt(temp.total) / 1000000000).toFixed(3)) -
+					parseFloat((parseInt(temp.available) / 1000000000).toFixed(3))
+				).toFixed(3);
 				total = (parseInt(temp.total) / 1000000000).toFixed(3);
 			}
 		};

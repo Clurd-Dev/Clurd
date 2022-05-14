@@ -1,3 +1,3 @@
-export function copy(url:string){
-  navigator.clipboard.writeText(url);
+export function copy(url: string) {
+	navigator.clipboard.writeText(url);
 }

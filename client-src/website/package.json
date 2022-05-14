@@ -39,6 +39,7 @@
 		"@fontsource/fira-mono": "^4.5.0",
 		"@joshnuss/svelte-codemirror": "^0.2.6",
 		"@lukeed/uuid": "^2.0.0",
+		"basic-ftp": "^4.6.6",
 		"cl-editor": "^2.3.0",
 		"codemirror": "^5.65.3",
 		"cookie": "^0.4.1",
