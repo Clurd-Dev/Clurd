@@ -3,16 +3,16 @@ This is the server-side of Clurd built with Rocket.rs
 Andrea Canale 2022
 Not very beautiful yet.
 */
+use fs2;
+use json::object;
+use rocket::fairing::{Fairing, Info, Kind};
 use rocket::fs::FileServer;
+use rocket::http::Header;
+use rocket::serde::{json::Json, Deserialize, Serialize};
+use rocket::{Request, Response};
 use std::fs;
 use std::path::Path;
 use std::string::ToString;
-use rocket::serde::{Deserialize, json::Json, Serialize};
-use json::object;
-use rocket::http::Header;
-use rocket::{Request, Response};
-use rocket::fairing::{Fairing, Info, Kind};
-use fs2;
 pub struct Cors;
 
 #[rocket::async_trait]
@@ -24,26 +24,22 @@ impl Fairing for Cors {
         }
     }
 
-    async fn on_response<'r>(&self,
-        request: &'r Request<'_>,
-        response: &mut Response<'r>) {
-        response.set_header(Header::new(
-            "access-control-allow-origin",
-            "*",
-        ));
+    async fn on_response<'r>(&self, request: &'r Request<'_>, response: &mut Response<'r>) {
+        response.set_header(Header::new("access-control-allow-origin", "*"));
         response.set_header(Header::new(
             "access-control-allow-methods",
-            "GET, PATCH, OPTIONS, POST", 
+            "GET, PATCH, OPTIONS, POST",
         ));
     }
 }
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
 
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 
 struct Task<'r> {
-    folder: &'r str
+    folder: &'r str,
 }
 
 #[derive(Deserialize)]
@@ -51,28 +47,26 @@ struct Task<'r> {
 
 struct UploadFile<'r> {
     folder: &'r str,
-    name_file: &'r str
+    name_file: &'r str,
 }
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 
 struct RenameFile<'r> {
     folder: &'r str,
-    new: &'r str
+    new: &'r str,
 }
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
 
-struct SpaceFolder { 
+struct SpaceFolder {
     total: String,
     available: String,
- }
+}
 
-
- 
 #[post("/", data = "<file>")]
-fn remove(file: Json<Task<'_>>) -> &str{
+fn remove(file: Json<Task<'_>>) -> &str {
     let removed = fs::remove_file(file.folder);
     let is_removed = match removed {
         Ok(_removed) => "1",
@@ -82,7 +76,7 @@ fn remove(file: Json<Task<'_>>) -> &str{
 }
 
 #[post("/", data = "<rename_file>")]
-fn rename(rename_file: Json<RenameFile<'_>>) -> &str{
+fn rename(rename_file: Json<RenameFile<'_>>) -> &str {
     println!("{}", rename_file.folder);
     let renamed = fs::rename(rename_file.folder, rename_file.new);
     let is_renamed = match renamed {
@@ -93,7 +87,7 @@ fn rename(rename_file: Json<RenameFile<'_>>) -> &str{
 }
 
 #[post("/", data = "<rename_file>")]
-fn copy(rename_file: Json<RenameFile<'_>>) -> &str{
+fn copy(rename_file: Json<RenameFile<'_>>) -> &str {
     let new_path = format!("{}{}", rename_file.new, rename_file.folder);
     let copied = fs::copy(rename_file.folder, new_path);
     let is_copied = match copied {
@@ -103,7 +97,7 @@ fn copy(rename_file: Json<RenameFile<'_>>) -> &str{
     is_copied
 }
 #[post("/", data = "<rename_file>")]
-fn movefs(rename_file: Json<RenameFile<'_>>) -> &str{
+fn movefs(rename_file: Json<RenameFile<'_>>) -> &str {
     let new_path = format!("{}{}", rename_file.new, rename_file.folder);
     let copied = fs::copy(rename_file.folder, new_path);
     let is_copied = match copied {
@@ -115,14 +109,14 @@ fn movefs(rename_file: Json<RenameFile<'_>>) -> &str{
         Ok(_removed) => "1",
         Err(_error) => "0",
     };
-    if is_copied == "1" && is_removed == "1"{
+    if is_copied == "1" && is_removed == "1" {
         "1"
-    }else{
+    } else {
         "0"
     }
 }
 #[post("/", data = "<task>")]
-fn space(task: Json<Task<'_>>) -> Json<SpaceFolder> { 
+fn space(task: Json<Task<'_>>) -> Json<SpaceFolder> {
     let pen_space = fs2::free_space(task.folder);
     let u64_space = match pen_space {
         Ok(pen_space) => pen_space,
@@ -134,78 +128,87 @@ fn space(task: Json<Task<'_>>) -> Json<SpaceFolder> {
         Err(_error) => u64::MIN,
     };
 
-    Json(SpaceFolder { 
+    Json(SpaceFolder {
         available: format!("{}", u64_space),
-        total: format!("{}", u64_total)
-     })
+        total: format!("{}", u64_total),
+    })
 }
 #[post("/", data = "<task>")]
-fn files(task: Json<Task<'_>>) -> String { 
+fn files(task: Json<Task<'_>>) -> String {
     let mut files_raw = json::JsonValue::new_array();
-    println!("{}", task.folder);
     let paths = fs::read_dir(&Path::new(task.folder)).unwrap();
-        
-      let names =
-      paths.map(|entry| {
-        let entry = entry.unwrap();
-        
-        let entry_path = entry.path();
-        let file_name = entry_path.file_name().unwrap();
-        
-        let file_name_as_str = file_name.to_str().unwrap();
-        
-        let file_name_as_string = String::from(file_name_as_str);
-        
-        file_name_as_string
-      }).collect::<Vec<String>>();
-        for path in names {
-            let hash;
-            let tpath = format!("{}/{}", task.folder, path);
-            let filename = tpath.clone();
-            let file_json = path.clone();
-            let metadata = fs::metadata(filename).expect("Error during files listing.");
-            let permission = metadata.permissions().readonly();
-            let size = metadata.len();
-            let symbolic = metadata.is_symlink();
-            if symbolic == true{
+    let names = paths
+        .map(|entry| {
+            let entry = entry.unwrap();
 
-            }else{
-                let is_dir = metadata.is_dir();
-                if is_dir == false{
-                    let bytes_raw = std::fs::read(tpath);
-                    let bytes = match bytes_raw {
-                        Ok(bytes_raw) => bytes_raw,
-                        Err(_error) => Vec::new(),
-                    };
-                    hash = sha256::digest_bytes(&bytes);
-                }else{
-                    hash = String::from("dir");
-                }
-                files_raw.push(object!{
+            let entry_path = entry.path();
+            let file_name = entry_path.file_name().unwrap();
+
+            let file_name_as_str = file_name.to_str().unwrap();
+
+            let file_name_as_string = String::from(file_name_as_str);
+
+            file_name_as_string
+        })
+        .collect::<Vec<String>>();
+    for path in names {
+        let hash;
+        let mut is_image: bool = false;
+        let mut is_video: bool = false;
+        let mut is_audio: bool = false;
+        let tpath = format!("{}/{}", task.folder, path);
+        let filename = tpath.clone();
+        let file_json = path.clone();
+        let metadata = fs::metadata(filename).expect("Error during files listing.");
+        let permission = metadata.permissions().readonly();
+        let size = metadata.len();
+        let symbolic = metadata.is_symlink();
+        if symbolic == true {
+        } else {
+            let is_dir = metadata.is_dir();
+            if is_dir == false {
+                let bytes_raw = std::fs::read(tpath);
+                let bytes = match bytes_raw {
+                    Ok(bytes_raw) => bytes_raw,
+                    Err(_error) => Vec::new(),
+                };
+                hash = sha256::digest_bytes(&bytes);
+                is_image = infer::is_image(&bytes);
+                is_video = infer::is_video(&bytes);
+                is_audio = infer::is_audio(&bytes);
+            } else {
+                hash = String::from("dir");
+            }
+            files_raw
+                .push(object! {
                     file: file_json,
                     md5: hash,
                     read_only: permission,
-                    size: size
-                }).expect("Error during push of array, open an issue on github");
-            }
-            }
-           
-        files_raw.to_string()
+                    size: size,
+                    image: is_image,
+                    video: is_video,
+                    audio: is_audio
+                })
+                .expect("Error during push of array, open an issue on github");
+        }
+    }
+
+    files_raw.to_string()
 }
 #[get("/")]
-fn index() ->  &'static str {
+fn index() -> &'static str {
     "Welcome to Clurd API"
 }
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/getfiles", routes![files])
-    .mount("/", routes![index]).attach(Cors)
-    .mount("/", FileServer::from("./"))
-    .mount("/remove", routes![remove])
-    .mount("/space", routes![space])
-    .mount("/rename", routes![rename])
-    .mount("/copy", routes![copy])
-    .mount("/move", routes![movefs])
+    rocket::build()
+        .mount("/getfiles", routes![files])
+        .mount("/", routes![index])
+        .attach(Cors)
+        .mount("/", FileServer::from("./"))
+        .mount("/remove", routes![remove])
+        .mount("/space", routes![space])
+        .mount("/rename", routes![rename])
+        .mount("/copy", routes![copy])
+        .mount("/move", routes![movefs])
 }
-
-

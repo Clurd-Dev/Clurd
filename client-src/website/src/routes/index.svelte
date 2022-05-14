@@ -62,7 +62,6 @@
 	function contex(e) {
 		only_file = rightClick(e);
 		current_file = 'http://localhost:8000' + (path.replace('.', '') + rightClick(e));
-		console.log(current_file);
 	}
 </script>
 
@@ -86,26 +85,38 @@
 
 <Contex {current_file} {path} {remove} {getfile} {rename} {ls} {current_name} {only_file} />
 <section>
-	<div class="grid-container" on:contextmenu={contex}>
+	<div class="grid-container" on:contextmenu={contex} align="center">
 		{#each ls as lsraw}
 			{#if lsraw.md5 == 'dir'}
-				<div class="grid-item" on:click={() => test(lsraw.file + '/')} id={lsraw.file}>
-					<img src="/images/folder.png" class="icon" alt="folder" />
+			
+				<div class="grid-item" on:click={() => test(lsraw.file + '/')} id={lsraw.file} align="center">
+					<div id="over">
+						<img src="/images/folder.png" class="icon" alt="folder" />
+					</div>
 					<p>{lsraw.file}</p>
 				</div>
 			{:else}
 				<div
 					class="grid-item"
-					on:click={() => dialogs.modal(Reader, { filename: path + lsraw.file })}
+					on:click={() => dialogs.modal(Reader, { filename: path + lsraw.file, image:lsraw.image, video:lsraw.video, url: current_file, audio:lsraw.audio, pure_filename: lsraw.file })}
 					on:contextmenu={contex}
 					id={lsraw.file}
+					align="center"
 				>
-					{#if lsraw.file.split('.')[1] != 'js'}
-						<img src="/images/file.png" class="icon" alt="file" />
+				<div id="over">
+					{#if lsraw.image}
+						<img src={"http://localhost:8000/" + path + lsraw.file} alt="fileimg" class="icon" />
+					{:else if lsraw.video}
+						<img src="/images/video.png" alt="filevideo" class="icon" />
+					{:else if lsraw.audio}
+						<img src="/images/audio.png" alt="fileaudio" class="icon"/>
+					{:else if lsraw.file.split('.')[1] == 'pdf'}
+						<img src="/images/pdf.png" alt="filepdf" class="icon"/>
 					{:else}
-						<img src="/images/js.png" alt="filejs" class="icon" />
+						<img src="/images/file.png" alt="file" class="icon"/>
 					{/if}
 					<p>{lsraw.file}</p>
+					</div>
 				</div>
 			{/if}
 		{/each}
@@ -116,4 +127,9 @@
 </section>
 
 <style>
+	#over img {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
 </style>
