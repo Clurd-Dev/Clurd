@@ -6,7 +6,7 @@ Not very beautiful yet.
 use fs2;
 use json::object;
 use rocket::fairing::{Fairing, Info, Kind};
-use rocket::fs::FileServer;
+use rocket::fs::{FileServer, Options};
 use rocket::http::Header;
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use rocket::{Request, Response};
@@ -190,10 +190,6 @@ fn files(task: Json<Task<'_>>) -> String {
 
     files_raw.to_string()
 }
-#[get("/")]
-fn index() -> &'static str {
-    "Welcome to Clurd API"
-}
 
 #[derive(Deserialize)]
 struct Config {
@@ -269,11 +265,13 @@ fn get_info() -> Json<Information>{
 
 #[launch]
 fn rocket() -> _ {
+    let config = Config::from_config_file("./config.toml").unwrap();
+    let options = Options::Index | Options::DotFiles;
     rocket::build()
         .mount("/getfiles", routes![files])
-        .mount("/", routes![index])
         .attach(Cors)
         .mount("/", FileServer::from("./"))
+        .mount("/", FileServer::new(config.path, options).rank(-1))
         .mount("/remove", routes![remove])
         .mount("/space", routes![space])
         .mount("/rename", routes![rename])
