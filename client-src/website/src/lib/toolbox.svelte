@@ -18,12 +18,11 @@
 			class="toolicon"
 		/>
 	</div>
-	
 </div>
 <p class="path">Current path: {path}</p>
 
 <style>
-	.path{
+	.path {
 		margin: 20px;
 	}
 </style>

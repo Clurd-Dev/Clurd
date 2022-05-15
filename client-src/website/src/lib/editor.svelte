@@ -1,25 +1,28 @@
 <script lang="ts">
 	import { DialogContent, dialogs } from 'svelte-dialogs';
 	import { onMount, onDestroy } from 'svelte';
-	import {ComponentWindow} from '../lib/ts/pdf';
+	import { ComponentWindow } from '../lib/ts/pdf';
 	import STDEditor from 'cl-editor';
 	import PdfViewer from 'svelte-pdf';
-	import {AudioPlayer} from 'svelte-mp3';
-	import 'bytemd/dist/index.css'
+	import { AudioPlayer } from 'svelte-mp3';
+	import 'bytemd/dist/index.css';
 	import { Editor, Viewer } from 'bytemd';
- 	import gfm from '@bytemd/plugin-gfm';
+	import gfm from '@bytemd/plugin-gfm';
 
-	let value; 
-	const plugins = [
-		gfm(),
-	]
+	let value;
+	const plugins = [gfm()];
 
 	function handleChange(e) {
 		value = e.detail.value;
 	}
 	let componentWindow = new ComponentWindow();
 	let component;
-	export let filename = '', image: boolean, video:boolean, url: string, audio:boolean, pure_filename: string ;
+	export let filename = '',
+		image: boolean,
+		video: boolean,
+		url: string,
+		audio: boolean,
+		pure_filename: string;
 	const ENDPOINT = 'http://localhost:8000/remove';
 	async function get() {
 		let text;
@@ -85,45 +88,43 @@
 		};
 		xhr.send(JSON.stringify({ folder: filename }));
 	}
-	onDestroy(() => componentWindow.destroy())
-	
-	$: if (component) component.$set({ url })
-	
+	onDestroy(() => componentWindow.destroy());
+
+	$: if (component) component.$set({ url });
+
 	async function openComponentWindow() {
 		if (componentWindow.isOpened) {
-			componentWindow.focus()
-			return
+			componentWindow.focus();
+			return;
 		}
 
 		component = await componentWindow.attachComponent(PdfViewer, {
 			props: {
-				url: "http://localhost:8000/" + filename			
+				url: 'http://localhost:8000/' + filename
 			}
-		})
-		
-		componentWindow.focus()
+		});
+
+		componentWindow.focus();
 	}
 
 	async function openmd() {
 		if (componentWindow.isOpened) {
-			componentWindow.focus()
-			return
+			componentWindow.focus();
+			return;
 		}
 
 		component = await componentWindow.attachComponent(Editor, {
 			props: {
-				value: await get()		
+				value: await get()
 			}
-		})
-		
-		componentWindow.focus()
+		});
+
+		componentWindow.focus();
 	}
 </script>
+
 <svelte:head>
-	<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@vime/core@^5/themes/default.css"
-/>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vime/core@^5/themes/default.css" />
 </svelte:head>
 <DialogContent>
 	<div slot="header" class="grid-container" align="center">
@@ -143,14 +144,14 @@
 
 	<svelte:fragment slot="body">
 		{#if image}
-			<img src={"http://localhost:8000/" + filename} alt={filename}/>
+			<img src={'http://localhost:8000/' + filename} alt={filename} />
 		{:else if video}
-			<video src={"http://localhost:8000/" + filename} controls></video>
+			<video src={'http://localhost:8000/' + filename} controls />
 		{:else if audio}
-			<AudioPlayer urls={["http://localhost:8000/" + filename]}/>
-		{:else if pure_filename.split(".")[1] == "pdf"}
+			<AudioPlayer urls={['http://localhost:8000/' + filename]} />
+		{:else if pure_filename.split('.')[1] == 'pdf'}
 			<button on:click={openComponentWindow}>View PDF file</button>
-		{:else if pure_filename.split(".")[1] == "md"}
+		{:else if pure_filename.split('.')[1] == 'md'}
 			<button on:click={openmd} on:change={handleChange}>Open MarkDown editor</button>
 		{:else}
 			<div id="editor" />

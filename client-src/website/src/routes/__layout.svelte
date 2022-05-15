@@ -45,7 +45,7 @@
 <Header />
 <div class="topnav" id="myTopnav">
 	<a href="/" class="active">Home</a>
-	<a href="/settings" >Settings</a>
+	<a href="/settings">Settings</a>
 </div>
 <main>
 	<slot />
@@ -54,13 +54,13 @@
 	<div align="center">
 		<p>Space in use: {available} GB of {total} GB</p>
 	</div>
-	<div  class="space">
+	<div class="space">
 		<progress class="uk-progress" value={available} max={total} />
 	</div>
 </footer>
 
 <style>
-	.space{
+	.space {
 		margin: 20px;
 	}
 </style>

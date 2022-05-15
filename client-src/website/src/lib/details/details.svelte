@@ -24,9 +24,9 @@
 				{:else}
 					<p>Size: {file.size / 1000} Kb</p>
 				{/if}
-        {#if file.md5 != "dir"}
-				  <p>MD5: {file.md5}</p>
-        {/if}
+				{#if file.md5 != 'dir'}
+					<p>MD5: {file.md5}</p>
+				{/if}
 			{/if}
 		{/each}
 	</svelte:fragment>

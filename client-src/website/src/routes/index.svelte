@@ -32,18 +32,18 @@
 	}
 
 	function goback() {
-		if (path == './' ) {
+		if (path == './') {
 			dialogs.alert("Can't go back through home");
-		}else{
+		} else {
 			let tempath = path.split('/');
 			tempath.pop();
 			path = tempath.join('/');
-			if (path == '.'){
-				path += '/'
-			getfile(path);
+			if (path == '.') {
+				path += '/';
+				getfile(path);
+			}
 		}
 	}
-}
 
 	async function rename(e) {
 		let old = current_file.replace(location_website, path);
@@ -96,8 +96,12 @@
 	<div class="grid-container" on:contextmenu={contex} align="center">
 		{#each ls as lsraw}
 			{#if lsraw.md5 == 'dir'}
-			
-				<div class="grid-item" on:click={() => test(lsraw.file + '/')} id={lsraw.file} align="center">
+				<div
+					class="grid-item"
+					on:click={() => test(lsraw.file + '/')}
+					id={lsraw.file}
+					align="center"
+				>
 					<div id="over">
 						<img src="/images/folder.png" class="icon" alt="folder" />
 					</div>
@@ -106,24 +110,32 @@
 			{:else}
 				<div
 					class="grid-item"
-					on:click={() => dialogs.modal(Reader, { filename: path + lsraw.file, image:lsraw.image, video:lsraw.video, url: current_file, audio:lsraw.audio, pure_filename: lsraw.file })}
+					on:click={() =>
+						dialogs.modal(Reader, {
+							filename: path + lsraw.file,
+							image: lsraw.image,
+							video: lsraw.video,
+							url: current_file,
+							audio: lsraw.audio,
+							pure_filename: lsraw.file
+						})}
 					on:contextmenu={contex}
 					id={lsraw.file}
 					align="center"
 				>
-				<div id="over">
-					{#if lsraw.image}
-						<img src="/images/image.png" alt="fileimg" class="icon" />
-					{:else if lsraw.video}
-						<img src="/images/video.png" alt="filevideo" class="icon" />
-					{:else if lsraw.audio}
-						<img src="/images/audio.png" alt="fileaudio" class="icon"/>
-					{:else if lsraw.file.split('.')[1] == 'pdf'}
-						<img src="/images/pdf.png" alt="filepdf" class="icon"/>
-					{:else}
-						<img src="/images/file.png" alt="file" class="icon"/>
-					{/if}
-					<p>{lsraw.file}</p>
+					<div id="over">
+						{#if lsraw.image}
+							<img src="/images/image.png" alt="fileimg" class="icon" />
+						{:else if lsraw.video}
+							<img src="/images/video.png" alt="filevideo" class="icon" />
+						{:else if lsraw.audio}
+							<img src="/images/audio.png" alt="fileaudio" class="icon" />
+						{:else if lsraw.file.split('.')[1] == 'pdf'}
+							<img src="/images/pdf.png" alt="filepdf" class="icon" />
+						{:else}
+							<img src="/images/file.png" alt="file" class="icon" />
+						{/if}
+						<p>{lsraw.file}</p>
 					</div>
 				</div>
 			{/if}
@@ -136,8 +148,8 @@
 
 <style>
 	#over img {
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-}
+		margin-left: auto;
+		margin-right: auto;
+		display: block;
+	}
 </style>
