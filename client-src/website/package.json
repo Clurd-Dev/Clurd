@@ -14,6 +14,7 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "next",
+		"@sveltejs/adapter-static": "^1.0.0-next.30",
 		"@sveltejs/kit": "next",
 		"@types/cookie": "^0.4.1",
 		"@typescript-eslint/eslint-plugin": "^5.10.1",
@@ -42,8 +43,8 @@
 		"@lukeed/uuid": "^2.0.0",
 		"@vime/core": "^5.3.1",
 		"@vime/svelte": "^5.3.1",
-		"basic-ftp": "^4.6.6",
 		"bytemd": "^1.14.0",
+		"canvas": "^2.9.1",
 		"cl-editor": "^2.3.0",
 		"codemirror": "^5.65.3",
 		"cookie": "^0.4.1",

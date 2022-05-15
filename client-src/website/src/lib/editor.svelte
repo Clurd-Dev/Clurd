@@ -156,6 +156,7 @@
 		{:else}
 			<div id="editor" />
 		{/if}
+		<div id="editor" hidden/>
 	</svelte:fragment>
 </DialogContent>
 
