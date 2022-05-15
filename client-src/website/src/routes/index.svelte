@@ -32,14 +32,18 @@
 	}
 
 	function goback() {
-		if (path == './') {
+		if (path == './' ) {
 			dialogs.alert("Can't go back through home");
+		}else{
+			let tempath = path.split('/');
+			tempath.pop();
+			path = tempath.join('/');
+			if (path == '.'){
+				path += '/'
+			getfile(path);
 		}
-		let tempath = path.split('/');
-		tempath.pop();
-		path = tempath.join('/');
-		getfile(path);
 	}
+}
 
 	async function rename(e) {
 		let old = current_file.replace(location_website, path);
@@ -62,7 +66,7 @@
 		document.onclick = hideMenu;
 		getfile(path);
 	});
-	
+
 	function contex(e) {
 		only_file = rightClick(e);
 		current_file = 'http://localhost:8000' + (path.replace('.', '') + rightClick(e));
