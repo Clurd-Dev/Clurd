@@ -13,6 +13,8 @@ use rocket::{Request, Response};
 use std::fs;
 use std::path::Path;
 use std::string::ToString;
+use config_file::FromConfigFile;
+use sysinfo::{NetworkExt, System, SystemExt};
 pub struct Cors;
 
 #[rocket::async_trait]
@@ -42,13 +44,6 @@ struct Task<'r> {
     folder: &'r str,
 }
 
-#[derive(Deserialize)]
-#[serde(crate = "rocket::serde")]
-
-struct UploadFile<'r> {
-    folder: &'r str,
-    name_file: &'r str,
-}
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 
@@ -199,6 +194,79 @@ fn files(task: Json<Task<'_>>) -> String {
 fn index() -> &'static str {
     "Welcome to Clurd API"
 }
+
+#[derive(Deserialize)]
+struct Config {
+    path: String,
+}
+
+#[derive(Serialize)]
+struct ConfigResponse { 
+    path: String
+ }
+
+#[get("/")]
+fn get_config() -> Json<ConfigResponse> {
+    let config = Config::from_config_file("./config.toml").unwrap();
+    Json(ConfigResponse {
+        path: config.path
+    })
+}
+
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+struct Information { 
+    disks: Vec<String>,
+    interface: Vec<String>,
+    components: Vec<String>,
+    total_memory: String,
+    used_memory: String,
+    total_swap: String,
+    used_swap: String,
+    system_name: String,
+    kernel_version: String,
+    system_version: String,
+    hostname: String,
+    core: String,
+    frontend_version: String,
+    backend_version: String
+ }
+
+#[get("/")]
+fn get_info() -> Json<Information>{
+    let mut sys = System::new_all();
+    sys.refresh_all();
+    let mut disks:Vec<String> = Vec::new();
+    let mut interface:Vec<String> = Vec::new();
+    let mut components:Vec<String> = Vec::new();
+    for disk in sys.disks() {
+        disks.push(format!("{:?}", disk));
+    }
+    for (interface_name, data) in sys.networks() {
+        interface.push(format!("{}: {}/{} B", interface_name, data.received(), data.transmitted()));
+    }
+    
+    for component in sys.components() {
+        components.push(format!("{:?}", component))
+    }
+    Json(Information { 
+        disks: disks,
+        interface: interface,
+        components: components,
+        total_memory: format!("{}", sys.total_memory()),
+        used_memory: format!("{}", sys.used_memory()),
+        total_swap: format!("{}", sys.total_swap()),
+        used_swap: format!("{}", sys.used_swap()),
+        system_name: format!("{:?}", sys.name()),
+        kernel_version: format!("{:?}", sys.kernel_version()),
+        system_version: format!("{:?}", sys.os_version()),
+        hostname: format!("{:?}", sys.host_name()),
+        core: format!("{}", sys.processors().len()),
+        frontend_version: String::from("v1.0"),
+        backend_version: String::from("v1.0")
+    })
+}
+
 #[launch]
 fn rocket() -> _ {
     rocket::build()
@@ -211,4 +279,8 @@ fn rocket() -> _ {
         .mount("/rename", routes![rename])
         .mount("/copy", routes![copy])
         .mount("/move", routes![movefs])
+        .mount("/getconfig", routes![get_config])
+        .mount("/getinfo", routes![get_info])
 }
+
+

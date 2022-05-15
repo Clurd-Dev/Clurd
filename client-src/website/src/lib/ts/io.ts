@@ -54,3 +54,25 @@ export async function movefs(old_file: string, new_file: string) {
 	};
 	xhr.send(JSON.stringify({ folder: old_file, new: new_file }));
 }
+
+export async function get_config(endpoint: string) {
+	const ENDPOINT = endpoint + 'getconfig';
+	const request = await fetch(ENDPOINT)
+	if (request.ok) {
+		const json = await request.json();
+		return json.path
+	  } else {
+		console.log("HTTP-Error: " + request.status);
+	  }
+}
+
+export async function get_information(endpoint: string) {
+	const ENDPOINT = endpoint + 'getinfo';
+	const request = await fetch(ENDPOINT)
+	if (request.ok) {
+		const json = await request.json();
+		return json
+	  } else {
+		console.log("HTTP-Error: " + request.status);
+	  }
+}

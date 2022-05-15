@@ -33,10 +33,7 @@
 </script>
 
 <svelte:head>
-	<!-- UIkit CSS -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/css/uikit.min.css" />
-
-	<!-- UIkit JS -->
 	<script src="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/js/uikit.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/js/uikit-icons.min.js"></script>
 	<link
@@ -48,16 +45,22 @@
 <Header />
 <div class="topnav" id="myTopnav">
 	<a href="/" class="active">Home</a>
+	<a href="/settings" >Settings</a>
 </div>
 <main>
 	<slot />
 </main>
 <footer>
 	<div align="center">
-		<p>Spazio utilizzato {available} GB of {total} GB</p>
+		<p>Space in use: {available} GB of {total} GB</p>
 	</div>
-	<progress class="uk-progress" value={available} max={total} />
+	<div  class="space">
+		<progress class="uk-progress" value={available} max={total} />
+	</div>
 </footer>
 
 <style>
+	.space{
+		margin: 20px;
+	}
 </style>

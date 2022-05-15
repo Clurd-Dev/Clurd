@@ -1,21 +1,21 @@
 <script lang="ts">
 	import { dialogs } from 'svelte-dialogs';
 	import Reader from '../lib/editor.svelte';
-	import { remove } from '../lib/ts/io';
+	import { remove, get_config } from '../lib/ts/io';
 	import { onMount } from 'svelte';
 	import { rightClick, hideMenu } from '../lib/ts/menu';
 	import Toolbox from '$lib/toolbox.svelte';
 	import Contex from '$lib/contex/contex.svelte';
-	const ENDPOINT = 'http://localhost:8000/getfiles';
-	const ENDPOINT_RENAME = 'http://localhost:8000/rename';
+	let location_website: string;
 	let current_name = '';
 	let ls: Array<object> = [];
 	let current_file = '';
-	let path = './';
+	let path: string;
 	let only_file: string;
+
 	function getfile(path: string) {
 		const xhr = new XMLHttpRequest();
-		xhr.open('POST', ENDPOINT, true);
+		xhr.open('POST', location_website + 'getfiles', true);
 		xhr.onreadystatechange = function () {
 			if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
 				ls = JSON.parse(this.response);
@@ -30,6 +30,7 @@
 		console.log(path);
 		getfile(path);
 	}
+
 	function goback() {
 		if (path == './') {
 			dialogs.alert("Can't go back through home");
@@ -39,14 +40,14 @@
 		path = tempath.join('/');
 		getfile(path);
 	}
+
 	async function rename(e) {
-		let old = current_file.replace('http://localhost:8000/', './');
-		console.log(old);
+		let old = current_file.replace(location_website, path);
 		let new_name: any = await dialogs.prompt('Insert the new name for this file');
 		if (new_name == undefined) dialogs.alert('Please enter a correct name with extension');
 		else {
 			const xhr = new XMLHttpRequest();
-			xhr.open('POST', ENDPOINT_RENAME, true);
+			xhr.open('POST', location_website + 'remove', true);
 			xhr.onreadystatechange = function () {
 				if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
 					getfile(path);
@@ -56,9 +57,12 @@
 		}
 	}
 	onMount(async () => {
+		location_website = 'http://' + location.hostname + ':8000/';
+		path = await get_config(location_website);
 		document.onclick = hideMenu;
 		getfile(path);
 	});
+	
 	function contex(e) {
 		only_file = rightClick(e);
 		current_file = 'http://localhost:8000' + (path.replace('.', '') + rightClick(e));
@@ -105,7 +109,7 @@
 				>
 				<div id="over">
 					{#if lsraw.image}
-						<img src={"http://localhost:8000/" + path + lsraw.file} alt="fileimg" class="icon" />
+						<img src="/images/image.png" alt="fileimg" class="icon" />
 					{:else if lsraw.video}
 						<img src="/images/video.png" alt="filevideo" class="icon" />
 					{:else if lsraw.audio}
