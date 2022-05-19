@@ -22,3 +22,9 @@ $ ./Clurd
 ## Information
 
 This project is in alpha stage, some functions is missing and the code need a refactoring
+
+# TODO
+
+- [ ] Add spinner during requests
+- [ ] Code need a refactoring
+- [ ] Implement file upload 
