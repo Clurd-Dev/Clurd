@@ -1,12 +1,17 @@
 <script lang="ts">
 	import { DialogContent } from 'svelte-dialogs';
-
+	import { onMount } from 'svelte';
 	export let ls: Array<object>,
 		name_file: string,
 		path: string,
 		current_name: string,
 		file_name: string;
-	name_file = name_file.replace('http://localhost:8000/', '');
+	let url;
+	onMount(()=> {
+		url = location.origin + '/';
+		name_file = name_file.replace(url, '');
+	});
+	
 	console.log(file_name);
 	console.log(ls);
 </script>

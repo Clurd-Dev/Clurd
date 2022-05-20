@@ -7,11 +7,16 @@
 		ls: Array<object>,
 		current_name: string,
 		only_file: string;
+	let url: string;
 	import { dialogs } from 'svelte-dialogs';
 	import { copy } from '../ts/copy';
+	import { onMount } from 'svelte';
 	import FSBrowser from '../file-browser/browser.svelte';
 	import Details from '$lib/details/details.svelte';
 	import './contex.css';
+	onMount(()=>{
+		url = location.origin;
+	});
 </script>
 
 <div id="contextMenu" class="context-menu" style="display: none">
@@ -44,7 +49,7 @@
 		</li>
 		<li
 			class="trash"
-			on:click={remove(path + current_file.replace('http://localhost:8000/', ''), getfile, path)}
+			on:click={remove(current_file.replace(url, ''), getfile, path, only_file)}
 		>
 			<a href="#"><i class="fa fa-trash" aria-hidden="true" /> Delete</a>
 		</li>

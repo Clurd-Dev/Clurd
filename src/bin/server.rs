@@ -65,6 +65,7 @@ struct SpaceFolder {
 
 #[post("/", data = "<file>")]
 fn remove(file: Json<Task<'_>>) -> &str {
+    println!("{}", file.folder);
     let removed = fs::remove_file(file.folder);
     let is_removed = match removed {
         Ok(_removed) => "1",

@@ -15,8 +15,8 @@ async function checkresponse(response: string, refresh, absolute) {
 		} while (confirm);
 	}
 }
-export async function remove(path: string, refresh, absolute: string) {
-	const ENDPOINT = 'http://localhost:8000/remove';
+export async function remove(path: string, refresh, absolute: string, only_file: string) {
+	const ENDPOINT = location.origin + '/remove';
 	const xhr = new XMLHttpRequest();
 	xhr.open('POST', ENDPOINT, true);
 	xhr.onreadystatechange = async function () {
@@ -24,11 +24,11 @@ export async function remove(path: string, refresh, absolute: string) {
 			checkresponse(this.responseText, refresh, absolute);
 		}
 	};
-	xhr.send(JSON.stringify({ folder: path }));
+	xhr.send(JSON.stringify({ folder: absolute + only_file}));
 }
 
 export async function copyfs(old_file: string, new_file: string, file: string) {
-	const ENDPOINT = 'http://localhost:8000/copy';
+	const ENDPOINT = location.origin + '/copy';
 	const xhr = new XMLHttpRequest();
 	xhr.open('POST', ENDPOINT, true);
 	xhr.onreadystatechange = async function () {
@@ -42,7 +42,7 @@ export async function copyfs(old_file: string, new_file: string, file: string) {
 }
 
 export async function movefs(old_file: string, new_file: string, file: string) {
-	const ENDPOINT = 'http://localhost:8000/move';
+	const ENDPOINT = location.origin + '/move';
 	const xhr = new XMLHttpRequest();
 	xhr.open('POST', ENDPOINT, true);
 	xhr.onreadystatechange = async function () {

@@ -15,7 +15,9 @@
 
 	function getfile(path: string) {
 		const xhr = new XMLHttpRequest();
-		xhr.open('POST', location_website + 'getfiles', true);
+		let url = location_website + '/' + 'getfiles';
+		console.log(url);
+		xhr.open('POST', url, true);
 		xhr.onreadystatechange = function () {
 			if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
 				ls = JSON.parse(this.response);
@@ -46,41 +48,35 @@
 	}
 
 	async function rename(e) {
-		let old = current_file.replace(location_website, path);
+		let old = current_file.replace(location_website + "/", path);
 		let new_name: any = await dialogs.prompt('Insert the new name for this file');
-		if (new_name == undefined) dialogs.alert('Please enter a correct name with extension');
-		else {
+		if (new_name == undefined) {
+			dialogs.alert('Please enter a correct name with extension');
+		}else {
 			const xhr = new XMLHttpRequest();
-			xhr.open('POST', location_website + 'remove', true);
+			xhr.open('POST', location_website + '/rename', true);
 			xhr.onreadystatechange = function () {
 				if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+					getfile(path);
+				}else{
+					dialogs.alert("Error during rename");
 					getfile(path);
 				}
 			};
 			xhr.send(JSON.stringify({ folder: old, new: new_name[0] }));
 		}
 	}
-	function upload(){
-		let photo = document.getElementById("inputdata").files[0];  // file from input
-		console.log(photo);
-		let req = new XMLHttpRequest();
-		let formData = new FormData();
 
-		formData.append("photo", photo);       
-		console.log(formData.values());           
-		req.open("POST", 'http://localhost:8000/upload/piru.json');  
-		req.send(formData);
-			}
 	onMount(async () => {
-		location_website = 'http://' + location.hostname + ':8000/';
-		path = await get_config(location_website);
+		location_website = location.origin;
+		path = await get_config(location_website + "/");
 		document.onclick = hideMenu;
 		getfile(path);
 	});
 
 	function contex(e) {
 		only_file = rightClick(e);
-		current_file = 'http://localhost:8000' + (path.replace('.', '') + rightClick(e));
+		current_file = location_website + (path.replace('.', '') + rightClick(e));
 	}
 </script>
 
@@ -152,12 +148,6 @@
 			{/if}
 		{/each}
 	</div>
-	<iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
-	<form action="http://localhost:8000/upload/cio.json" method="post" enctype="multipart/form-data" target="dummyframe">
-	Select image to upload:
-	<input type="file" name="fileToUpload" id="fileToUpload">
-	<input type="submit" value="Upload Image" name="submit">
-	</form>
 	<hr />
 </section>
 

@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { copy } from '$lib/ts/copy';
-
+	import { onMount } from 'svelte';
 	import { DialogContent } from 'svelte-dialogs';
 	import { copyfs, movefs } from '../ts/io';
-	const ENDPOINT = 'http://localhost:8000/getfiles';
 	export let ls: Array<object>, path: string, current_name: string, current_file: string, file: string;
+	let url: string;
+	let ENDPOINT: string;
 	function getfile(path: string) {
 		const xhr = new XMLHttpRequest();
 		xhr.open('POST', ENDPOINT, true);
@@ -16,11 +17,15 @@
 		xhr.send(JSON.stringify({ folder: path }));
 	}
 	async function test(e: string) {
-		console.log(current_file.replace('http://localhost:8000/', ''));
+		console.log(current_file.replace(url, ''));
 		path = path + e;
 		current_name = e;
 		getfile(path);
 	}
+	onMount(()=> {
+		url = location.origin + '/';
+		ENDPOINT = url + 'getfiles';
+	});
 </script>
 
 <DialogContent>
@@ -32,12 +37,12 @@
 			{/if}
 		{/each}
 		<p>
-			<button on:click={copyfs(current_file.replace('http://localhost:8000/', ''), path, file)}
+			<button on:click={copyfs(current_file.replace(url, ''), path, file)}
 				>Copy the file here</button
 			>
 		</p>
 		<p>
-			<button on:click={movefs(current_file.replace('http://localhost:8000/', ''), path, file)}
+			<button on:click={movefs(current_file.replace(url, ''), path, file)}
 				>Move the file here</button
 			>
 		</p>

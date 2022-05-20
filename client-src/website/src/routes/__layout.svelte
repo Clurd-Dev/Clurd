@@ -5,7 +5,6 @@
 	import '../app.css';
 	let available: string = '0',
 		total: string = '0';
-	const ENDPOINT: string = 'http://localhost:8000/space';
 	function myFunction() {
 		var x = document.getElementById('myTopnav');
 		if (x.className === 'topnav') {
@@ -16,7 +15,7 @@
 	}
 	onMount(() => {
 		var xhr = new XMLHttpRequest();
-		xhr.open('POST', ENDPOINT, true);
+		xhr.open('POST', location.origin + '/space', true);
 		xhr.onreadystatechange = function () {
 			if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
 				//console.log(JSON.parse(this.response));

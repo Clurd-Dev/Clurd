@@ -8,9 +8,10 @@ struct Config {
 
 #[tokio::main]
 pub async fn main() {
+    println!("Starting FTP server for Clurd");
     let config = Config::from_config_file("./config.toml").unwrap();
     let server = libunftp::Server::with_fs(config.path)
-        .greeting("Welcome to my FTP server")
+        .greeting("Welcome to FTP Clurd")
         .passive_ports(50000..65535);
 
     server.listen("0.0.0.0:2121").await;

@@ -8,7 +8,7 @@
 	import 'bytemd/dist/index.css';
 	import { Editor, Viewer } from 'bytemd';
 	import gfm from '@bytemd/plugin-gfm';
-
+	let ENDPOINT;
 	let value;
 	const plugins = [gfm()];
 
@@ -23,16 +23,16 @@
 		url: string,
 		audio: boolean,
 		pure_filename: string;
-	const ENDPOINT = 'http://localhost:8000/remove';
 	async function get() {
 		let text;
-		await fetch('http://localhost:8000/' + filename).then(
+		await fetch(location.origin + '/' + filename).then(
 			async (data) => (text = await data.text())
 		);
 		return text;
 	}
 
 	onMount(async () => {
+		ENDPOINT = location.origin + '/remove';
 		const editor = new STDEditor({
 			// <HTMLElement> required
 			target: document.getElementById('editor'),
@@ -100,7 +100,7 @@
 
 		component = await componentWindow.attachComponent(PdfViewer, {
 			props: {
-				url: 'http://localhost:8000/' + filename
+				url: location.origin + '/' + filename
 			}
 		});
 
@@ -130,7 +130,7 @@
 	<div slot="header" class="grid-container" align="center">
 		<div class="grid-item">
 			<div align="center">
-				<a href={'http://localhost:8000/' + filename}>
+				<a href={location.origin + '/' + filename}>
 					<img src="/images/download.png" alt="icondownload" />
 				</a>
 			</div>
@@ -144,11 +144,11 @@
 
 	<svelte:fragment slot="body">
 		{#if image}
-			<img src={'http://localhost:8000/' + filename} alt={filename} />
+			<img src={location.origin + '/' + filename} alt={filename} />
 		{:else if video}
-			<video src={'http://localhost:8000/' + filename} controls />
+			<video src={location.origin + '/' + filename} controls />
 		{:else if audio}
-			<AudioPlayer urls={['http://localhost:8000/' + filename]} />
+			<AudioPlayer urls={[location.origin + '/' + filename]} />
 		{:else if pure_filename.split('.')[1] == 'pdf'}
 			<button on:click={openComponentWindow}>View PDF file</button>
 		{:else if pure_filename.split('.')[1] == 'md'}

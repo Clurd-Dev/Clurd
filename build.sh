@@ -6,9 +6,11 @@ if ! [ -x "$(command -v npm)" ]; then
   echo 'Error: npm is not installed.' >&2
   exit 1
 fi
+rm -rf out/
 mkdir out
+#cargo clean
 cargo build
-cp target/debug/clurd out/
+cp target/debug/server out/
 cp target/debug/ftp out/
 cp config.toml out/
 cd client-src/website/
