@@ -32,7 +32,8 @@
 						ls: ls,
 						path: path,
 						current_name: current_name,
-						current_file: current_file
+						current_file: current_file,
+						file: only_file
 					})}
 			>
 				<i class="fa fa-copy" aria-hidden="true" /> Copy/Move to

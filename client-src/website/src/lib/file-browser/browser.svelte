@@ -4,7 +4,7 @@
 	import { DialogContent } from 'svelte-dialogs';
 	import { copyfs, movefs } from '../ts/io';
 	const ENDPOINT = 'http://localhost:8000/getfiles';
-	export let ls: Array<object>, path: string, current_name: string, current_file: string;
+	export let ls: Array<object>, path: string, current_name: string, current_file: string, file: string;
 	function getfile(path: string) {
 		const xhr = new XMLHttpRequest();
 		xhr.open('POST', ENDPOINT, true);
@@ -32,12 +32,12 @@
 			{/if}
 		{/each}
 		<p>
-			<button on:click={copyfs(current_file.replace('http://localhost:8000/', ''), path)}
+			<button on:click={copyfs(current_file.replace('http://localhost:8000/', ''), path, file)}
 				>Copy the file here</button
 			>
 		</p>
 		<p>
-			<button on:click={movefs(current_file.replace('http://localhost:8000/', ''), path)}
+			<button on:click={movefs(current_file.replace('http://localhost:8000/', ''), path, file)}
 				>Move the file here</button
 			>
 		</p>
