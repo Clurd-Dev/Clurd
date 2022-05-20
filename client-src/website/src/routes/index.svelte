@@ -152,8 +152,12 @@
 			{/if}
 		{/each}
 	</div>
-	<input type="file" name="dummyname" id="inputdata"  enctype="multipart/form-data"/>
-	<button on:click={upload}>Upload</button>
+	<iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+	<form action="http://localhost:8000/upload/cio.json" method="post" enctype="multipart/form-data" target="dummyframe">
+	Select image to upload:
+	<input type="file" name="fileToUpload" id="fileToUpload">
+	<input type="submit" value="Upload Image" name="submit">
+	</form>
 	<hr />
 </section>
 

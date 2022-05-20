@@ -15,7 +15,9 @@ use std::path::Path;
 use std::string::ToString;
 use config_file::FromConfigFile;
 use sysinfo::{NetworkExt, System, SystemExt};
+use rocket::form::Form;
 use rocket::fs::TempFile;
+
 pub struct Cors;
 
 #[rocket::async_trait]
@@ -112,10 +114,9 @@ fn movefs(rename_file: Json<RenameFile<'_>>) -> &str {
 }
 
 
-
-#[post("/<id>", format = "multipart/form-data", data = "<file>")]
-async fn upload(mut file: TempFile<'_>, id: String) -> std::io::Result<()> {
-    file.persist_to(id).await
+#[derive(FromForm)]
+struct Upload<'f> {
+    upload: TempFile<'f>
 }
 
 #[post("/", data = "<task>")]
@@ -287,7 +288,6 @@ fn rocket() -> _ {
         .mount("/move", routes![movefs])
         .mount("/getconfig", routes![get_config])
         .mount("/getinfo", routes![get_info])
-        .mount("/upload", routes![upload])
 }
 
 

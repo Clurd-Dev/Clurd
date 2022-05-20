@@ -9,6 +9,7 @@ fi
 mkdir out
 cargo build
 cp target/debug/clurd out/
+cp target/debug/ftp out/
 cp config.toml out/
 cd client-src/website/
 npm install
