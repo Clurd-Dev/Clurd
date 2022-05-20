@@ -60,6 +60,17 @@
 			xhr.send(JSON.stringify({ folder: old, new: new_name[0] }));
 		}
 	}
+	function upload(){
+		let photo = document.getElementById("inputdata").files[0];  // file from input
+		console.log(photo);
+		let req = new XMLHttpRequest();
+		let formData = new FormData();
+
+		formData.append("photo", photo);       
+		console.log(formData.values());           
+		req.open("POST", 'http://localhost:8000/upload/piru.json');  
+		req.send(formData);
+			}
 	onMount(async () => {
 		location_website = 'http://' + location.hostname + ':8000/';
 		path = await get_config(location_website);
@@ -141,8 +152,8 @@
 			{/if}
 		{/each}
 	</div>
-	<!-- <input type="file" name="dummyname" id="inputdata" />
-	<button on:click={upload}>Upload</button> -->
+	<input type="file" name="dummyname" id="inputdata"  enctype="multipart/form-data"/>
+	<button on:click={upload}>Upload</button>
 	<hr />
 </section>
 
