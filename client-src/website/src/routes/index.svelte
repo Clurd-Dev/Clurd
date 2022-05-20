@@ -102,7 +102,7 @@
 					id={lsraw.file}
 					align="center"
 				>
-					<div id="over">
+					<div id={lsraw.file}>
 						<img src="/images/folder.png" class="icon" alt="folder" />
 					</div>
 					<p>{lsraw.file}</p>
@@ -123,7 +123,7 @@
 					id={lsraw.file}
 					align="center"
 				>
-					<div id="over">
+					<div id={lsraw.file}>
 						{#if lsraw.image}
 							<img src="/images/image.png" alt="fileimg" class="icon" />
 						{:else if lsraw.video}

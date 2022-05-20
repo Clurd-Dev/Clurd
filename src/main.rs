@@ -84,7 +84,7 @@ fn rename(rename_file: Json<RenameFile<'_>>) -> &str {
 #[post("/", data = "<rename_file>")]
 fn copy(rename_file: Json<RenameFile<'_>>) -> &str {
     let new_path = format!("{}{}", rename_file.new, rename_file.folder);
-    let copied = fs::copy(rename_file.folder, new_path);
+    let copied = fs::copy(rename_file.folder, rename_file.new);
     let is_copied = match copied {
         Ok(_renamed) => "1",
         Err(_error) => "0",
@@ -93,8 +93,7 @@ fn copy(rename_file: Json<RenameFile<'_>>) -> &str {
 }
 #[post("/", data = "<rename_file>")]
 fn movefs(rename_file: Json<RenameFile<'_>>) -> &str {
-    let new_path = format!("{}{}", rename_file.new, rename_file.folder);
-    let copied = fs::copy(rename_file.folder, new_path);
+    let copied = fs::copy(rename_file.folder, rename_file.new);
     let is_copied = match copied {
         Ok(_renamed) => "1",
         Err(_error) => "0",

@@ -27,7 +27,7 @@ export async function remove(path: string, refresh, absolute: string) {
 	xhr.send(JSON.stringify({ folder: path }));
 }
 
-export async function copyfs(old_file: string, new_file: string) {
+export async function copyfs(old_file: string, new_file: string, file: string) {
 	const ENDPOINT = 'http://localhost:8000/copy';
 	const xhr = new XMLHttpRequest();
 	xhr.open('POST', ENDPOINT, true);
@@ -38,10 +38,10 @@ export async function copyfs(old_file: string, new_file: string) {
 			else dialogs.alert('File unsuccessfully copied, check the error in log of server or retry');
 		}
 	};
-	xhr.send(JSON.stringify({ folder: old_file, new: new_file }));
+	xhr.send(JSON.stringify({ folder: old_file, new: new_file + file }));
 }
 
-export async function movefs(old_file: string, new_file: string) {
+export async function movefs(old_file: string, new_file: string, file: string) {
 	const ENDPOINT = 'http://localhost:8000/move';
 	const xhr = new XMLHttpRequest();
 	xhr.open('POST', ENDPOINT, true);
@@ -52,7 +52,7 @@ export async function movefs(old_file: string, new_file: string) {
 			else dialogs.alert('File unsuccessfully moved, check the error in log of server or retry');
 		}
 	};
-	xhr.send(JSON.stringify({ folder: old_file, new: new_file }));
+	xhr.send(JSON.stringify({ folder: old_file, new: new_file + file }));
 }
 
 export async function get_config(endpoint: string) {
