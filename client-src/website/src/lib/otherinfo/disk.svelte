@@ -1,12 +1,10 @@
 <script lang="ts">
+	import 'uikit/dist/css/uikit.css';
+	import 'uikit/dist/js/uikit.js';
+	import 'uikit/dist/js/uikit-icons.js';
 	export let disks: Array<string> = [];
 </script>
 
-<svelte:head>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/css/uikit.min.css" />
-	<script src="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/js/uikit.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/js/uikit-icons.min.js"></script>
-</svelte:head>
 <div align="center">
 	<table class="uk-table uk-table-divider center" align="center">
 		<tbody>

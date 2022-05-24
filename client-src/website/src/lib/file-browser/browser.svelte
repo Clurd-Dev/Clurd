@@ -1,4 +1,7 @@
 <script lang="ts">
+	import 'uikit/dist/css/uikit.css';
+	import 'uikit/dist/js/uikit.js';
+	import 'uikit/dist/js/uikit-icons.js';
 	import { copy } from '$lib/ts/copy';
 	import { onMount } from 'svelte';
 	import { DialogContent } from 'svelte-dialogs';

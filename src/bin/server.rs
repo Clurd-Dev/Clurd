@@ -115,10 +115,6 @@ fn movefs(rename_file: Json<RenameFile<'_>>) -> &str {
 }
 
 
-#[derive(FromForm)]
-struct Upload<'f> {
-    upload: TempFile<'f>
-}
 
 #[post("/", data = "<task>")]
 fn space(task: Json<Task<'_>>) -> Json<SpaceFolder> {
@@ -157,7 +153,6 @@ fn files(task: Json<Task<'_>>) -> String {
         })
         .collect::<Vec<String>>();
     for path in names {
-        let hash;
         let mut is_image: bool = false;
         let mut is_video: bool = false;
         let mut is_audio: bool = false;
@@ -177,22 +172,20 @@ fn files(task: Json<Task<'_>>) -> String {
                     Ok(bytes_raw) => bytes_raw,
                     Err(_error) => Vec::new(),
                 };
-                hash = sha256::digest_bytes(&bytes);
                 is_image = infer::is_image(&bytes);
                 is_video = infer::is_video(&bytes);
                 is_audio = infer::is_audio(&bytes);
             } else {
-                hash = String::from("dir");
             }
             files_raw
                 .push(object! {
                     file: file_json,
-                    md5: hash,
                     read_only: permission,
                     size: size,
                     image: is_image,
                     video: is_video,
-                    audio: is_audio
+                    audio: is_audio,
+                    dir: is_dir
                 })
                 .expect("Error during push of array, open an issue on github");
         }
@@ -268,8 +261,8 @@ fn get_info() -> Json<Information>{
         system_version: format!("{:?}", sys.os_version()),
         hostname: format!("{:?}", sys.host_name()),
         core: format!("{}", sys.processors().len()),
-        frontend_version: String::from("v1.0"),
-        backend_version: String::from("v1.0")
+        frontend_version: String::from("v1.1"),
+        backend_version: String::from("v1.1")
     })
 }
 

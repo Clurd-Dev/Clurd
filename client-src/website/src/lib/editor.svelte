@@ -8,6 +8,9 @@
 	import 'bytemd/dist/index.css';
 	import { Editor, Viewer } from 'bytemd';
 	import gfm from '@bytemd/plugin-gfm';
+	import 'uikit/dist/css/uikit.css';
+	import 'uikit/dist/js/uikit.js';
+	import 'uikit/dist/js/uikit-icons.js';
 	let ENDPOINT;
 	let value;
 	const plugins = [gfm()];

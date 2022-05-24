@@ -1,4 +1,7 @@
 <script lang="ts">
+	import 'uikit/dist/css/uikit.css';
+	import 'uikit/dist/js/uikit.js';
+	import 'uikit/dist/js/uikit-icons.js';
 	import { get_config, get_information } from '$lib/ts/io';
 	import { onMount, onDestroy } from 'svelte';
 	import Disk from '$lib/otherinfo/disk.svelte';

@@ -1,4 +1,7 @@
 <script lang="ts">
+	import 'uikit/dist/css/uikit.css';
+	import 'uikit/dist/js/uikit.js';
+	import 'uikit/dist/js/uikit-icons.js';
 	import Header from '$lib/header/Header.svelte';
 	import { onMount } from 'svelte';
 
@@ -32,9 +35,6 @@
 </script>
 
 <svelte:head>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/css/uikit.min.css" />
-	<script src="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/js/uikit.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/uikit@3.14.1/dist/js/uikit-icons.min.js"></script>
 	<link
 		rel="stylesheet"
 		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"

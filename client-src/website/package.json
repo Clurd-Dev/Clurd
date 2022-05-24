@@ -55,6 +55,7 @@
 		"svelte-quill": "^1.2.0",
 		"svelte-video-player": "^1.2.5",
 		"tailwind-editor": "^0.1.62",
-		"typewriter-editor": "^0.7.9"
+		"typewriter-editor": "^0.7.9",
+		"uikit": "^3.14.1"
 	}
 }

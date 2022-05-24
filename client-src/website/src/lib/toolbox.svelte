@@ -1,4 +1,7 @@
 <script>
+	import 'uikit/dist/css/uikit.css';
+	import 'uikit/dist/js/uikit.js';
+	import 'uikit/dist/js/uikit-icons.js';
 	export let goback, getfile, path;
 </script>
 

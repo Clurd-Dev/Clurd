@@ -6,6 +6,9 @@
 	import { rightClick, hideMenu } from '../lib/ts/menu';
 	import Toolbox from '$lib/toolbox.svelte';
 	import Contex from '$lib/contex/contex.svelte';
+	import 'uikit/dist/css/uikit.css';
+	import 'uikit/dist/js/uikit.js';
+	import 'uikit/dist/js/uikit-icons.js';
 	let location_website: string;
 	let current_name = '';
 	let ls: Array<object> = [];
