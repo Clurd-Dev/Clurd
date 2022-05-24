@@ -105,7 +105,7 @@
 <section>
 	<div class="grid-container" on:contextmenu={contex} align="center">
 		{#each ls as lsraw}
-			{#if lsraw.md5 == 'dir'}
+			{#if lsraw.dir == true}
 				<div
 					class="grid-item"
 					on:click={() => test(lsraw.file + '/')}
