@@ -28,4 +28,4 @@ This project is in alpha stage, some functions is missing and the code need a re
 - [ ] Add spinner during requests
 - [ ] Code need a refactoring
 - [ ] Implement file upload 
-- [ ] Add lightbox to image 
+- [x] Add lightbox to image 

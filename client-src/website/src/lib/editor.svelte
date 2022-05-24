@@ -133,7 +133,7 @@
 	<div slot="header" class="grid-container" align="center">
 		<div class="grid-item">
 			<div align="center">
-				<a href={location.origin + '/' + filename}>
+				<a href={location.origin + '/' + filename} download>
 					<img src="/images/download.png" alt="icondownload" />
 				</a>
 			</div>
@@ -147,7 +147,11 @@
 
 	<svelte:fragment slot="body">
 		{#if image}
-			<img src={location.origin + '/' + filename} alt={filename} />
+			<div uk-lightbox>
+				<a href={location.origin + '/' + filename}>
+					<img src={location.origin + '/' + filename} alt={filename} />
+				</a>
+			</div>
 		{:else if video}
 			<video src={location.origin + '/' + filename} controls />
 		{:else if audio}
