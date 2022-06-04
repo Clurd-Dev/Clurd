@@ -21,3 +21,4 @@ sysinfo = "0.23.12"
 libunftp = "0.18.4"
 unftp-sbe-fs = "0.2.0"
 tokio = { version = "1", features = ["full"] }
+unftp-auth-jsonfile = "0.2.0"

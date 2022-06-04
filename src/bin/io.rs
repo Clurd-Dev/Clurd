@@ -46,7 +46,6 @@ pub fn rename(folder: &str, new: &str) -> String {
 }
 
 pub fn copy(folder: &str, new: &str) -> String {
-    let new_path = format!("{}{}", new, folder);
     let copied = fs::copy(folder, new);
     let is_copied = match copied {
         Ok(_renamed) => "1",

@@ -337,6 +337,7 @@ dependencies = [
  "sha256",
  "sysinfo",
  "tokio",
+ "unftp-auth-jsonfile",
  "unftp-sbe-fs",
  "zip",
 ]
@@ -961,6 +962,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a5bbe824c507c5da5956355e86a746d82e0e1464f65d862cc5e71da70e94b2c"
 dependencies = [
  "cfg-if 1.0.0",
+]
+
+[[package]]
+name = "ipnet"
+version = "2.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "879d54834c8c76457ef4293a689b2a8c59b076067ad77b15efafbb05f92a592b"
+
+[[package]]
+name = "iprange"
+version = "0.6.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "37209be0ad225457e63814401415e748e2453a5297f9b637338f5fb8afa4ec00"
+dependencies = [
+ "ipnet",
 ]
 
 [[package]]
@@ -2372,6 +2388,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "unftp-auth-jsonfile"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aff608fdfbb7c85699485b4f77997bc3fdd87c744a65c823c6a6601d554bfaf1"
+dependencies = [
+ "async-trait",
+ "base64",
+ "bytes",
+ "ipnet",
+ "iprange",
+ "libunftp",
+ "ring",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-attributes",
+ "valid",
+]
+
+[[package]]
 name = "unftp-sbe-fs"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2441,6 +2478,12 @@ checksum = "8cfcd319456c4d6ea10087ed423473267e1a071f3bc0aa89f80d60997843c6f0"
 dependencies = [
  "getrandom",
 ]
+
+[[package]]
+name = "valid"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fbf199f808324beb0d617398cdc4aa3589dbe0b6142b669704a81b8573cf04b5"
 
 [[package]]
 name = "valuable"
