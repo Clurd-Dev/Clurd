@@ -50,6 +50,7 @@
 		"cookie": "^0.4.1",
 		"jquery": "^3.6.0",
 		"svelte-dialogs": "^1.1.0",
+		"svelte-loading-spinners": "^0.1.7",
 		"svelte-mp3": "^1.2.0",
 		"svelte-pdf": "^1.0.11",
 		"svelte-quill": "^1.2.0",
