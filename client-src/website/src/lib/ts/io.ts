@@ -16,6 +16,7 @@ async function checkresponse(response: string, refresh, absolute) {
 	}
 }
 export async function remove(path: string, refresh, absolute: string, only_file: string) {
+	console.log(absolute + "/" + only_file);
 	const ENDPOINT = location.origin + '/remove';
 	const xhr = new XMLHttpRequest();
 	xhr.open('POST', ENDPOINT, true);
@@ -24,10 +25,13 @@ export async function remove(path: string, refresh, absolute: string, only_file:
 			checkresponse(this.responseText, refresh, absolute);
 		}
 	};
-	xhr.send(JSON.stringify({ folder: absolute + only_file}));
+	xhr.send(JSON.stringify({ folder: absolute + "/" + only_file}));
 }
 
 export async function copyfs(old_file: string, new_file: string, file: string) {
+	console.log(old_file);
+	console.log(new_file);
+	console.log(file);
 	const ENDPOINT = location.origin + '/copy';
 	const xhr = new XMLHttpRequest();
 	xhr.open('POST', ENDPOINT, true);

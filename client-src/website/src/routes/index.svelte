@@ -4,6 +4,7 @@
 	import { remove, get_config } from '../lib/ts/io';
 	import { onMount } from 'svelte';
 	import { rightClick, hideMenu } from '../lib/ts/menu';
+	import { Circle2 } from 'svelte-loading-spinners'
 	import Toolbox from '$lib/toolbox.svelte';
 	import Contex from '$lib/contex/contex.svelte';
 	import 'uikit/dist/css/uikit.css';
@@ -15,25 +16,28 @@
 	let current_file = '';
 	let path: string;
 	let only_file: string;
-
+	let loading: boolean;
+	let virt_path: string = "";
 	function getfile(path: string) {
+		loading = true;
 		const xhr = new XMLHttpRequest();
 		let url = location_website + '/' + 'getfiles';
-		console.log(url);
 		xhr.open('POST', url, true);
 		xhr.onreadystatechange = function () {
 			if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
 				ls = JSON.parse(this.response);
+				loading = false;
 			}
 		};
 		xhr.send(JSON.stringify({ folder: path }));
 	}
 
 	async function test(e: string) {
+		virt_path = virt_path + e;
 		path = path + e;
 		current_name = e;
-		console.log(path);
 		getfile(path);
+		console.log(virt_path)
 	}
 
 	function goback() {
@@ -43,15 +47,20 @@
 			let tempath = path.split('/');
 			tempath.pop();
 			path = tempath.join('/');
-			if (path == '.') {
+			let temp_virt_path = virt_path.split('/');
+			temp_virt_path.pop();
+			virt_path = temp_virt_path.join('/');
+			if (path == '.') 
 				path += '/';
-				getfile(path);
-			}
+			if (virt_path == "")
+				virt_path = "/";
+			getfile(path);
+			console.log("VIRT:" + virt_path);
 		}
 	}
 
 	async function rename(e) {
-		let old = current_file.replace(location_website + "/", path);
+		let old = path + "/" + only_file;
 		let new_name: any = await dialogs.prompt('Insert the new name for this file');
 		if (new_name == undefined) {
 			dialogs.alert('Please enter a correct name with extension');
@@ -66,11 +75,15 @@
 					getfile(path);
 				}
 			};
-			xhr.send(JSON.stringify({ folder: old, new: new_name[0] }));
+			// console.log(old);
+			// console.log(new_name[0]);
+			// console.log(path);
+			xhr.send(JSON.stringify({ folder: old, new: path + "/" + new_name[0] }));
 		}
 	}
 
 	onMount(async () => {
+		loading = true;
 		location_website = location.origin;
 		path = await get_config(location_website + "/");
 		document.onclick = hideMenu;
@@ -79,7 +92,8 @@
 
 	function contex(e) {
 		only_file = rightClick(e);
-		current_file = location_website + (path.replace('.', '') + rightClick(e));
+		current_file = location_website + (virt_path + "/" + rightClick(e));
+		console.log(current_file);
 	}
 </script>
 
@@ -101,14 +115,19 @@
 
 <Toolbox {getfile} {goback} {path} />
 
-<Contex {current_file} {path} {remove} {getfile} {rename} {ls} {current_name} {only_file} />
+<Contex {current_file} {path} {remove} {getfile} {rename} {ls} {current_name} {only_file} old_path={path}/>
 <section>
+	{#if loading == true}
+		<div align="center">
+			<Circle2 size="256" unit="px" duration="1s"></Circle2>
+		</div>
+	{:else}
 	<div class="grid-container" on:contextmenu={contex} align="center">
 		{#each ls as lsraw}
 			{#if lsraw.dir == true}
 				<div
 					class="grid-item"
-					on:click={() => test(lsraw.file + '/')}
+					on:click={() => test("/" + lsraw.file)}
 					id={lsraw.file}
 					align="center"
 				>
@@ -122,7 +141,7 @@
 					class="grid-item"
 					on:click={() =>
 						dialogs.modal(Reader, {
-							filename: path + lsraw.file,
+							filename: virt_path + lsraw.file,
 							image: lsraw.image,
 							video: lsraw.video,
 							url: current_file,
@@ -152,6 +171,7 @@
 		{/each}
 	</div>
 	<hr />
+	{/if}
 </section>
 
 <style>

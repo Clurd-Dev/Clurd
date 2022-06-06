@@ -6,7 +6,7 @@
 		rename: any,
 		ls: Array<object>,
 		current_name: string,
-		only_file: string;
+		only_file: string, old_path: string;
 	let url: string;
 	import { dialogs } from 'svelte-dialogs';
 	import { copy } from '../ts/copy';
@@ -16,6 +16,7 @@
 	import './contex.css';
 	onMount(()=>{
 		url = location.origin;
+		console.log(path);
 	});
 </script>
 
@@ -38,7 +39,8 @@
 						path: path,
 						current_name: current_name,
 						current_file: current_file,
-						file: only_file
+						file: only_file,
+						old_path: old_path
 					})}
 			>
 				<i class="fa fa-copy" aria-hidden="true" /> Copy/Move to
